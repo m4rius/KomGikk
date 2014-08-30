@@ -1,6 +1,6 @@
-package com.marius.komgikk.user;
+package com.marius.komgikk.domain;
 
-import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.*;
 
 public class User {
     public static final String kind = "USER";
@@ -34,14 +34,28 @@ public class User {
         return name;
     }
 
-    public Entity createEntity() {
+    public User store() {
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
         Entity entity = new Entity(kind, username);
         entity.setProperty("password", password);
         entity.setProperty("name", name);
-        return entity;
+        datastore.put(entity);
+        return this;
     }
 
-    public static User from(Entity entity) {
+    public static User get(String username) {
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        Key key = KeyFactory.createKey(User.kind, username);
+
+        try {
+            return from(datastore.get(key));
+        } catch (EntityNotFoundException e) {
+            return null;
+        }
+    }
+
+    private static User from(Entity entity) {
         User user = new User();
         user.username = entity.getKey().getName();
         user.name = (String) entity.getProperty("name");
