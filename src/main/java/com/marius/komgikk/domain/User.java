@@ -2,12 +2,15 @@ package com.marius.komgikk.domain;
 
 import com.google.appengine.api.datastore.*;
 
+import java.util.Map;
+
 public class User {
     public static final String kind = "USER";
 
     private String username;
     private String password;
     private String name;
+    private String email;
 
     private User() {
 
@@ -16,6 +19,13 @@ public class User {
     public User(String username, String name) {
         this.username = username;
         this.name = name;
+    }
+
+    public User(Map map) {
+        this.username = (String) map.get("username");
+        this.name = (String) map.get("name");
+        this.email = (String) map.get("email");
+        this.password = (String) map.get("password");
     }
 
     public String getUsername() {
@@ -62,4 +72,5 @@ public class User {
         user.password = (String) entity.getProperty("password");
         return user;
     }
+
 }
