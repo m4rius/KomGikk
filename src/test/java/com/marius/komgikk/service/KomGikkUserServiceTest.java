@@ -2,7 +2,7 @@ package com.marius.komgikk.service;
 
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-import com.marius.komgikk.domain.User;
+import com.marius.komgikk.domain.KomGikkUser;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -11,7 +11,7 @@ import org.junit.Test;
 /**
  * Created by marius on 31.08.14.
  */
-public class UserServiceTest {
+public class KomGikkUserServiceTest {
 
     private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
 
@@ -30,7 +30,7 @@ public class UserServiceTest {
     public void testStore() {
         UserService userService = new UserService();
 
-        User user = userService.store(
+        KomGikkUser user = userService.store(
                 "{\"command\":\"store\", \"entity\":\"user\", \"params\": " +
                 "{\"username\":\"user1\", \"name\":\"nils\" , \"password\":\"pass1\"," +
                 " \"email\":\"nils.nilsen@gmail.com\"}}");

@@ -33,12 +33,12 @@ public class DatastoreTest {
     public void testUser() {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
-        new User("user1", "Nils").store();
-        assertEquals(1, ds.prepare(new Query(User.kind)).countEntities(withLimit(10)));
-        new User("user2", "Ola").store();
-        assertEquals(2, ds.prepare(new Query(User.kind)).countEntities(withLimit(10)));
+        new KomGikkUser("user1", "Nils").store();
+        assertEquals(1, ds.prepare(new Query(KomGikkUser.kind)).countEntities(withLimit(10)));
+        new KomGikkUser("user2", "Ola").store();
+        assertEquals(2, ds.prepare(new Query(KomGikkUser.kind)).countEntities(withLimit(10)));
 
-        User user = User.get("user1");
+        KomGikkUser user = KomGikkUser.get("user1");
         assertEquals("Nils", user.getName());
     }
 
@@ -46,8 +46,8 @@ public class DatastoreTest {
     public void testActivity() {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
-        User user1 = new User("u1", "Nils").store();
-        User user2 = new User("u2", "Ola").store();
+        KomGikkUser user1 = new KomGikkUser("u1", "Nils").store();
+        KomGikkUser user2 = new KomGikkUser("u2", "Ola").store();
 
         new Activity(user1, "Project1").store();
         new Activity(user1, "Project2").store();
@@ -65,7 +65,7 @@ public class DatastoreTest {
     public void testTimeEvent() {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
-        User user1 = new User("u1", "Nils").store();
+        KomGikkUser user1 = new KomGikkUser("u1", "Nils").store();
         Activity a1 = new Activity(user1, "Project1").store();
 
         new TimeEvent(user1, DateTime.now(), a1).store();

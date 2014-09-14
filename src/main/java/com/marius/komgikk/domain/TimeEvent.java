@@ -11,7 +11,7 @@ public class TimeEvent {
 
     public static final String kind = "TimeEvent";
 
-    private User user;
+    private KomGikkUser user;
     private DateTime started;
     private Activity activity;
     private String key;
@@ -19,13 +19,13 @@ public class TimeEvent {
     private TimeEvent() {
     }
 
-    public TimeEvent(User user, DateTime started, Activity activity) {
+    public TimeEvent(KomGikkUser user, DateTime started, Activity activity) {
         this.user = user;
         this.started = started;
         this.activity = activity;
     }
 
-    public User getUser() {
+    public KomGikkUser getUser() {
         return user;
     }
 
@@ -48,7 +48,7 @@ public class TimeEvent {
         return this;
     }
 
-    public static List<TimeEvent> get(User user) {
+    public static List<TimeEvent> get(KomGikkUser user) {
         Query.Filter userFilter = new Query.FilterPredicate("user", Query.FilterOperator.EQUAL, user.getUsername());
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
@@ -64,7 +64,7 @@ public class TimeEvent {
         return result;
     }
 
-    private static TimeEvent from(Entity entity, User user) {
+    private static TimeEvent from(Entity entity, KomGikkUser user) {
         TimeEvent te = new TimeEvent();
         te.key = KeyFactory.keyToString(entity.getKey());
         te.user = user;

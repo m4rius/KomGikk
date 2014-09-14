@@ -13,7 +13,7 @@ import java.io.IOException;
 /**
  * Created by marius on 01.09.14.
  */
-public class RestrictedAreaServlet extends HttpServlet {
+public class KomGikkServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -26,6 +26,14 @@ public class RestrictedAreaServlet extends HttpServlet {
         resp.getWriter().println(String.format("Nick: %s", currentUser.getNickname()));
         resp.getWriter().println(String.format("Id: %s", currentUser.getUserId()));
         resp.getWriter().println(String.format("email: %s", currentUser.getEmail()));
+
+
+        String thisURL = req.getRequestURI();
+        resp.getWriter().println("<p>Hello, " +
+                req.getUserPrincipal().getName() +
+                "!  You can <a href=\"" +
+                userService.createLogoutURL(thisURL) +
+                "\">sign out</a>.</p>");
 
     }
 }

@@ -10,7 +10,7 @@ public class WorkingDay {
 
     public static final String kind = "WorkingDay";
 
-    private User user;
+    private KomGikkUser user;
     private Date date;
     private DateTime started;
     private DateTime ended;

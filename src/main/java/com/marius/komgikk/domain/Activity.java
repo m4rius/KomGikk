@@ -11,13 +11,13 @@ public class Activity {
     public static final Activity undefined = new Activity(null, "undefined");
 
     private String key;
-    private User user;
+    private KomGikkUser user;
     private String name;
 
     private Activity() {
     }
 
-    public Activity(User user, String name) {
+    public Activity(KomGikkUser user, String name) {
         this.user = user;
         this.name = name;
     }
@@ -37,7 +37,7 @@ public class Activity {
         return this;
     }
 
-    public static Activity from(Entity entity, User user) {
+    public static Activity from(Entity entity, KomGikkUser user) {
         Activity activity = new Activity();
         activity.user = user;
         activity.name = (String) entity.getProperty("name");
@@ -45,7 +45,7 @@ public class Activity {
         return activity;
     }
 
-    public static List<Activity> get(User user) {
+    public static List<Activity> get(KomGikkUser user) {
         Query.Filter userFilter = new Query.FilterPredicate("user", Query.FilterOperator.EQUAL, user.getUsername());
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();

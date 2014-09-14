@@ -5,35 +5,35 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
-		<welcome-file-list>
-			<welcome-file>index.html</welcome-file>
-		</welcome-file-list>
-
 
     <servlet>
-        <servlet-name>RestrictedAreaServlet</servlet-name>
-        <servlet-class>com.marius.komgikk.servlet.RestrictedAreaServlet</servlet-class>
+        <servlet-name>KomGikkServlet</servlet-name>
+        <servlet-class>com.marius.komgikk.servlet.KomGikkServlet</servlet-class>
     </servlet>
     
     <servlet-mapping>
-        <servlet-name>RestrictedAreaServlet</servlet-name>
-        <url-pattern>/restricted</url-pattern>
+        <servlet-name>KomGikkServlet</servlet-name>
+        <url-pattern>/*</url-pattern>
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>OpenServlet</servlet-name>
-        <servlet-class>com.marius.komgikk.servlet.OpenServlet</servlet-class>
+        <servlet-name>Jersey Web Application</servlet-name>
+        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>jersey.config.server.provider.packages</param-name>
+            <param-value>com.marius.komgikk.rest</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
     </servlet>
-
     <servlet-mapping>
-        <servlet-name>OpenServlet</servlet-name>
-        <url-pattern>/open</url-pattern>
+        <servlet-name>Jersey Web Application</servlet-name>
+        <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
 
     <security-constraint>
         <web-resource-collection>
-            <web-resource-name>restricted</web-resource-name>
-            <url-pattern>/restricted</url-pattern>
+            <web-resource-name>komgikk</web-resource-name>
+            <url-pattern>/*</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <role-name>*</role-name>
