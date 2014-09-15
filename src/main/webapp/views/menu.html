@@ -1,0 +1,18 @@
+<!-- Fixed navbar -->
+<div class="navbar navbar-default navbar-fixed-top" role="navigation" ng-controller="menuCtrl">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Kom & Gikk</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li ng-repeat="item in menu" ng-class="getMenuClass(item)"><a href="#" ng-click="selectMenu(item)">{{item.name}}</a></li>
+            </ul>
+            <p class="navbar-text navbar-right">Logget inn som <a href="#" class="navbar-link">{{user.name || 'missing'}}</a></p>
+        </div><!--/.nav-collapse -->
+    </div>
+</div>

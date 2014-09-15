@@ -1,0 +1,20 @@
+<div>
+    <table class="table table-striped table-bordered table-hover">
+        <thead>
+        <tr>
+            <th>Navn</th>
+            <th>Type</th>
+            <th>SAP</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="item in data.activities | orderBy: 'name'">
+            <td>{{item.name}}</td>
+            <td>{{item.type}}</td>
+            <td>{{item.sap}}</td>
+            <td><button type="button" class="btn btn-xs btn-primary">Endre</button> </td>
+        </tr>
+        </tbody>
+    </table>
+</div>

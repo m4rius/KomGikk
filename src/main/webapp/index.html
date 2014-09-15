@@ -1,17 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="komGikkApp">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="../../favicon.ico">
 
     <title>Kom & Gikk</title>
 
     <!-- Bootstrap core CSS -->
     <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet">
+    <script src="/angular.js"></script>
 
     <style>
         body {
@@ -19,50 +20,34 @@
             padding-top: 70px;
         }
     </style>
+
+    <script>
+        angular.module("komGikkApp", []);
+    </script>
+    <script src="/controllers/mainController.js"></script>
+    <script src="/controllers/menuController.js"></script>
 </head>
 
-<body>
+<body ng-controller="mainCtrl">
 
-<!-- Fixed navbar -->
-<div class="navbar navbar-default navbar-fixed-top" role="navigation">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">Kom & Gikk</a>
-        </div>
-        <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-                <li class="active"><a href="#">Registrer tid</a></li>
-                <li><a href="#about">Aktiviteter</a></li>
-                <li><a href="#contact">Ukeliste</a></li>
-            </ul>
-            <p class="navbar-text navbar-right">Logget inn som <a href="#" class="navbar-link">{{user.name || 'missing'}}</a></p>
-        </div><!--/.nav-collapse -->
-    </div>
+<ng-include src="'views/menu.html'"></ng-include>
+
+<div class="alert alert-danger" ng-show="data.error">
+    <p>Sorry, noe gikk helt på tryne. Error ({{data.error.status || 'undefined'}}).</p>
+    <a href="/index.html" class="alert-link">Prøv igjen</a>
 </div>
 
-<div class="container">
+<div class="container" ng-hide="data.error">
 
-    <!-- Main component for a primary marketing message or call to action -->
-    <div class="jumbotron">
-        <div class="text-center">
-            <h1>Start dag</h1>
-            <div class="btn-group btn-group-justified">
-                <a class="btn btn-lg btn-primary" href="../../components/#navbar" role="button">Kom</a>
-            </div>
-        </div>
-    </div>
+<ng-include src="'views/worklog.html'"></ng-include>
+
+<ng-include src="'views/activities.html'"></ng-include>
+
 
 </div> <!-- /container -->
 
-
-<!-- Bootstrap core JavaScript
-================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="/jquery-1.11.1.min.js"></script>
 <script src="/bootstrap/js/bootstrap.min.js"></script>
+
 </body>
 </html>
