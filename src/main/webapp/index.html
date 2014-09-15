@@ -22,10 +22,19 @@
     </style>
 
     <script>
-        angular.module("komGikkApp", []);
+        angular.module("komGikkApp", ["ngRoute"])
+            .config(function ($routeProvider) {
+                //todo: gjøre dette dynamisk fra $scope.menu
+                $routeProvider.when("/time", { templateUrl: "views/time.html"});
+                $routeProvider.when("/activities", { templateUrl: "views/activities.html"});
+                $routeProvider.when("/summary", { templateUrl: "views/summary.html"});
+                $routeProvider.otherwise({ templateUrl: "views/time.html"});
+            })
+        ;
     </script>
     <script src="/controllers/mainController.js"></script>
     <script src="/controllers/menuController.js"></script>
+    <script src="/ngmodules/angular-route.js"></script>
 </head>
 
 <body ng-controller="mainCtrl">
@@ -39,9 +48,7 @@
 
 <div class="container" ng-hide="data.error">
 
-<ng-include src="'views/worklog.html'"></ng-include>
-
-<ng-include src="'views/activities.html'"></ng-include>
+<ng-view />
 
 
 </div> <!-- /container -->

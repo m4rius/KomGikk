@@ -10,7 +10,7 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li ng-repeat="item in menu" ng-class="getMenuClass(item)"><a href="#" ng-click="selectMenu(item)">{{item.name}}</a></li>
+                <li ng-repeat="item in menu" ng-class="getMenuClass(item)"><a href="{{item.url}}" ng-click="selectMenu(item)">{{item.name}}</a></li>
             </ul>
             <p class="navbar-text navbar-right">Logget inn som <a href="#" class="navbar-link">{{user.name || 'missing'}}</a></p>
         </div><!--/.nav-collapse -->
