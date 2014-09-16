@@ -49,9 +49,9 @@ public class DatastoreTest {
         KomGikkUser user1 = new KomGikkUser("u1", "Nils").store();
         KomGikkUser user2 = new KomGikkUser("u2", "Ola").store();
 
-        new Activity(user1, "Project1").store();
-        new Activity(user1, "Project2").store();
-        new Activity(user2, "Project3").store();
+        new Activity(user1, "Project1", "Admin", "xx").store();
+        new Activity(user1, "Project2", "Admin", "yy").store();
+        new Activity(user2, "Project3", "Utvikling", "zz").store();
 
         assertEquals(3, ds.prepare(new Query(Activity.kind)).countEntities(withLimit(10)));
 
@@ -66,7 +66,7 @@ public class DatastoreTest {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
         KomGikkUser user1 = new KomGikkUser("u1", "Nils").store();
-        Activity a1 = new Activity(user1, "Project1").store();
+        Activity a1 = new Activity(user1, "Project1", "Admin", "xx").store();
 
         new TimeEvent(user1, DateTime.now(), a1).store();
 

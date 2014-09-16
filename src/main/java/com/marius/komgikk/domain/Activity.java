@@ -8,18 +8,22 @@ import java.util.List;
 public class Activity {
 
     public static final String kind = "Activity";
-    public static final Activity undefined = new Activity(null, "undefined");
+    public static final Activity undefined = new Activity(null, "undefined", null, null);
 
     private String key;
     private KomGikkUser user;
     private String name;
+    private String type;
+    private String sap;
 
     private Activity() {
     }
 
-    public Activity(KomGikkUser user, String name) {
+    public Activity(KomGikkUser user, String name, String type, String sap) {
         this.user = user;
         this.name = name;
+        this.type = type;
+        this.sap = sap;
     }
 
     public String getName() {
@@ -31,6 +35,8 @@ public class Activity {
         Entity entity = new Entity(kind);
         entity.setProperty("user", user.getUsername());
         entity.setProperty("name", name);
+        entity.setProperty("type", type);
+        entity.setProperty("sap", sap);
 
         datastore.put(entity);
         key = KeyFactory.keyToString(entity.getKey());
@@ -42,6 +48,8 @@ public class Activity {
         activity.user = user;
         activity.name = (String) entity.getProperty("name");
         activity.key = KeyFactory.keyToString(entity.getKey());
+        activity.type = (String) entity.getProperty("type");
+        activity.sap = (String) entity.getProperty("sap");
         return activity;
     }
 
@@ -64,5 +72,9 @@ public class Activity {
 
     public String getKey() {
         return key;
+    }
+
+    public void setUser(KomGikkUser user) {
+        this.user = user;
     }
 }

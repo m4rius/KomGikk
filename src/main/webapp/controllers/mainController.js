@@ -1,5 +1,5 @@
 angular.module("komGikkApp")
-    .constant("activitiesUrl", "http://localhost:5500/activities")
+    .constant("activitiesUrl", "http://localhost:9090/api/activities")
     .controller("mainCtrl", function ($scope, $http, activitiesUrl) {
 
         $scope.data = {};
