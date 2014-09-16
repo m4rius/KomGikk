@@ -3,8 +3,6 @@ angular.module("komGikkApp")
     .controller("activitiesListCtrl", function ($scope, $location, $http, activityUrl) {
 
         $scope.saveNewActivity = function(newActivity) {
-            console.log(newActivity);
-
             $http.post(activityUrl, newActivity)
                 .success(function(data) {
                     $scope.data.activities.push(newActivity);

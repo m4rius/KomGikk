@@ -1,0 +1,25 @@
+<style>
+    input.ng-invalid { background-color: lightpink; }
+    input.ng-valid { background-color: lightgreen; }
+    span.error { color: red; font-weight: bold; }
+</style>
+
+<h2>Profil</h2>
+
+<div class="jumbotron" ng-controller="userCtrl">
+    <form name="editUserForm" novalidate>
+
+        <div class="form-group">
+            <label>Navn</label>
+            <input name="name" class="form-control" ng-model="data.user.name" required />
+            <span class="error" ng-show="editUserForm.name.$error.required">Legg inn navn</span>
+        </div>
+
+        <div class="text-center">
+            <button ng-disabled="editUserForm.$invalid"
+                    ng-click="editUser(data.user)"
+                    class="btn btn-primary">Lagre</button>
+        </div>
+    </form>
+
+</div>

@@ -9,16 +9,6 @@ import java.util.Map;
 
 public class UserService {
 
-    /**
-     *
-     * Forventer json:
-     *
-     * {"command":"store", "entity":"user", "params": {"username":"user1", "name":"nils" , "password":"pass1", "email":"nils.nilsen@gmail.com"}}
-     *
-     * @param json
-     * @return
-     */
-
     public KomGikkUser store(String json) {
         Map map = new Gson().fromJson(json, Map.class);
 
@@ -37,14 +27,10 @@ public class UserService {
 
 
         KomGikkUser user = KomGikkUser.get(googleUser.getUserId());
-        if (user != null) {
+        if (user == null) {
             user = new KomGikkUser(googleUser.getUserId(), googleUser.getEmail(), googleUser.getNickname());
-            return user;
+            user.store();
         }
-
-        throw new RuntimeException("Kunne ikke finne brukeren");
-
-
-
+        return user;
     }
 }
