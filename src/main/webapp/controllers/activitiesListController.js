@@ -1,9 +1,8 @@
 angular.module("komGikkApp")
-    .constant("activityUrl", "http://localhost:9090/api/activity")
-    .controller("activitiesListCtrl", function ($scope, $location, $http, activityUrl) {
+    .controller("activitiesListCtrl", function ($scope, $location, $http, properties) {
 
         $scope.saveNewActivity = function(newActivity) {
-            $http.post(activityUrl, newActivity)
+            $http.post(properties.activityUrl, newActivity)
                 .success(function(data) {
                     $scope.data.activities.push(newActivity);
                     $scope.data.newactivity = null;

@@ -1,10 +1,9 @@
 angular.module("komGikkApp")
-    .constant("userUrl", "http://localhost:9090/api/user")
-    .controller("userCtrl", function($scope, $http, $location, userUrl) {
+    .controller("userCtrl", function($scope, $http, $location, properties) {
 
 
         $scope.editUser = function(updateUser) {
-            $http.post(userUrl, updateUser)
+            $http.post(properties.userUrl, updateUser)
                 .error(function(error) {
                     $scope.data.error = error;
                 })

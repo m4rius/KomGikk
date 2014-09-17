@@ -1,11 +1,9 @@
 angular.module("komGikkApp")
-    .constant("activitiesUrl", "http://localhost:9090/api/activities")
-    .constant("userUrl", "http://localhost:9090/api/user")
-    .controller("mainCtrl", function ($scope, $http, activitiesUrl, userUrl) {
+    .controller("mainCtrl", function ($scope, $http, properties) {
 
         $scope.data = {};
 
-        $http.get(activitiesUrl)
+        $http.get(properties.activitiesUrl)
             .success(function(data) {
                 $scope.data.activities = data;
             })
@@ -13,7 +11,7 @@ angular.module("komGikkApp")
                $scope.data.error = error;
             });
 
-        $http.get(userUrl)
+        $http.get(properties.userUrl)
             .success(function (data){
                 $scope.data.user = data;
             })
