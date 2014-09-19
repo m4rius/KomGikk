@@ -75,7 +75,6 @@ public class TimeEvent {
             Entity entityActivity = datastore.get(KeyFactory.stringToKey((String) entity.getProperty("activity")));
             te.activity = Activity.from(entityActivity, user);
         } catch (EntityNotFoundException e) {
-            te.activity = Activity.undefined;
         }
 
         return te;

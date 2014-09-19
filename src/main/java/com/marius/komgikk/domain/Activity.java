@@ -7,74 +7,82 @@ import java.util.List;
 
 public class Activity {
 
-    public static final String kind = "Activity";
-    public static final Activity undefined = new Activity(null, "undefined", null, null);
+    public static final String kind = "ACTIVITY";
 
-    private String key;
-    private KomGikkUser user;
-    private String name;
-    private String type;
-    private String sap;
+    private Entity entity;
 
-    private Activity() {
+    private Activity(KomGikkUser user) {
+        this.entity = new Entity(kind, user.getEntity().getKey());
     }
 
-    public Activity(KomGikkUser user, String name, String type, String sap) {
-        this.user = user;
-        this.name = name;
-        this.type = type;
-        this.sap = sap;
+    public Activity(KomGikkUser user, String name, String sap) {
+        this(user);
+        entity.setProperty("user", user.getUsername());
+        entity.setProperty("name", name);
+        entity.setProperty("sap", sap);
+        entity.setProperty("state", ActivityState.CURRENT.name());
     }
 
     public String getName() {
-        return name;
+        return (String) entity.getProperty("name");
+    }
+
+    public String getSap() {
+        return (String) entity.getProperty("sap");
+    }
+
+    public String getKey() {
+        return KeyFactory.keyToString(entity.getKey());
     }
 
     public Activity store() {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        Entity entity = new Entity(kind);
-        entity.setProperty("user", user.getUsername());
-        entity.setProperty("name", name);
-        entity.setProperty("type", type);
-        entity.setProperty("sap", sap);
-
         datastore.put(entity);
-        key = KeyFactory.keyToString(entity.getKey());
         return this;
     }
 
+    public void delete() {
+        entity.setProperty("state", ActivityState.HISTORIC.name());
+        store();
+    }
+
     public static Activity from(Entity entity, KomGikkUser user) {
-        Activity activity = new Activity();
-        activity.user = user;
-        activity.name = (String) entity.getProperty("name");
-        activity.key = KeyFactory.keyToString(entity.getKey());
-        activity.type = (String) entity.getProperty("type");
-        activity.sap = (String) entity.getProperty("sap");
+        Activity activity = new Activity(user);
+        activity.entity = entity;
         return activity;
     }
 
-    public static List<Activity> get(KomGikkUser user) {
-        Query.Filter userFilter = new Query.FilterPredicate("user", Query.FilterOperator.EQUAL, user.getUsername());
+    public static List<JsonActivity> getForJson(KomGikkUser user) {
+        Query.Filter stateFilter = new Query.FilterPredicate("state", Query.FilterOperator.EQUAL, ActivityState.CURRENT.name());
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-        Query q = new Query(Activity.kind).setFilter(userFilter);
+        Query q = new Query(Activity.kind)
+                .setAncestor(user.getEntity().getKey())
+                .setFilter(stateFilter);
+
         PreparedQuery pq = datastore.prepare(q);
 
-        List<Activity> result = new ArrayList<>();
+        List<JsonActivity> result = new ArrayList<>();
         for (Entity entity : pq.asIterable()) {
-            result.add(Activity.from(entity, user));
+            result.add(JsonActivity.from(entity));
         }
 
         return result;
-
     }
 
-    public String getKey() {
-        return key;
+    public static Activity findStored(JsonActivity jsonActivity, KomGikkUser user) {
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        try {
+            Entity entity = datastore.get(KeyFactory.stringToKey(jsonActivity.key));
+            return Activity.from(entity, user);
+        } catch (EntityNotFoundException e) {
+            return null;
+        }
     }
 
-    public void setUser(KomGikkUser user) {
-        this.user = user;
+
+    private enum ActivityState {
+        CURRENT, HISTORIC
     }
 }

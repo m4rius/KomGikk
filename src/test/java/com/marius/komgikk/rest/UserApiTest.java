@@ -1,22 +1,23 @@
-package com.marius.komgikk.service;
+package com.marius.komgikk.rest;
 
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-import com.marius.komgikk.domain.KomGikkUser;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-public class KomGikkUserServiceTest {
+public class UserApiTest {
 
-    private LocalServiceTestHelper helper;
+
+    private  LocalServiceTestHelper helper;
 
     @Before
     public void setup() {
+
         HashMap<String, Object> envAttr = new HashMap<String, Object>();
         envAttr.put("com.google.appengine.api.users.UserService.user_id_key", "10");
 
@@ -37,14 +38,17 @@ public class KomGikkUserServiceTest {
     }
 
     @Test
-    public void testGetCurrentUser() {
-        UserService userService = new UserService();
+    public void testGet() {
+        UserApi userApi = new UserApi();
+        String currentUser = userApi.getCurrentUser();
+        String expected = "{\"username\":\"10\",\"email\":\"test@test.com\"}";
+        assertEquals(expected, currentUser);
+    }
 
-        KomGikkUser currentUser = userService.getCurrentUser();
-
-        assertNotNull(currentUser);
-        assertEquals("10", currentUser.getUsername());
-        assertEquals("test@test.com", currentUser.getEmail());
-        assertNull(currentUser.getName());
+    @Test
+    public void testStore() {
+        String input = "{\"username\":\"10\",\"email\":\"test@test.com\", \"name\":\"Nils\"}";
+        UserApi userApi = new UserApi();
+ //       userApi.store(input);
     }
 }

@@ -13,6 +13,27 @@ angular.module("komGikkApp")
                 .finally(function() {
                     $location.path("/activities");
                 });
+        };
+
+        $scope.deleteActivity = function(activity) {
+            //$http.delete(properties.activityUrl, activity)
+            //todo bruk delete
+            activity.action = "delete";
+            $http.post(properties.activityUrl, activity)
+                .success(function(data) {
+                    var index = -1;
+                    for (var i = 0; i < $scope.data.activities.length; i++) {
+                        if ($scope.data.activities[i].key == activity.key) {
+                            index = i;
+                        }
+                    }
+                    if (index >= 0) {
+                        $scope.data.activities.splice(index, 1);
+                    }
+                })
+
         }
+
+
 
     });

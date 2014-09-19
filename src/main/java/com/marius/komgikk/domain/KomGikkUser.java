@@ -1,63 +1,62 @@
 package com.marius.komgikk.domain;
 
 import com.google.appengine.api.datastore.*;
-
-import java.util.Map;
+import com.google.common.base.Preconditions;
 
 public class KomGikkUser {
     public static final String kind = "USER";
 
-    private String username;
-    private String password;
-    private String name;
-    private String email;
+    private Entity entity;
 
-    private KomGikkUser() {
-
+    public KomGikkUser(String username) {
+        entity = new Entity(kind, username);
+        entity.setProperty("username", username);
     }
 
-    public KomGikkUser(String username, String name) {
-        this.username = username;
-        this.name = name;
+    public KomGikkUser(String username, String email) {
+        this(username, null, email);
     }
 
-    public KomGikkUser(Map map) {
-        this.username = (String) map.get("username");
-        this.name = (String) map.get("name");
-        this.email = (String) map.get("email");
-        this.password = (String) map.get("password");
-    }
+    public KomGikkUser(String username, String name, String email) {
+        this(username);
+        this.entity.setProperty("name", name);
+        this.entity.setProperty("email", email);
 
-    public KomGikkUser(String userId, String email, String nickname) {
-        this.username = userId;
-        this.email = email;
-        //todo legg inn nickname
+        checkProperties();
     }
 
     public String getUsername() {
-        return username;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getPassword() {
-        return password;
+        return (String) entity.getProperty("username");
     }
 
     public String getName() {
-        return name;
+        return (String) entity.getProperty("name");
+    }
+
+    public String getEmail() {
+        return (String) entity.getProperty("email");
+    }
+
+    //TODO bare gi ut key
+    @Deprecated
+    public Entity getEntity() {
+        return entity;
+    }
+
+    public Key getKey() {
+        return entity.getKey();
+    }
+
+    public void setName(String name) {
+        entity.setProperty("name", name);
     }
 
     public KomGikkUser store() {
-        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        checkProperties();
 
-        Entity entity = new Entity(kind, username);
-        entity.setProperty("password", password);
-        entity.setProperty("name", name);
-        entity.setProperty("email", email);
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         datastore.put(entity);
+
         return this;
     }
 
@@ -73,12 +72,25 @@ public class KomGikkUser {
     }
 
     private static KomGikkUser from(Entity entity) {
-        KomGikkUser user = new KomGikkUser();
-        user.username = entity.getKey().getName();
-        user.name = (String) entity.getProperty("name");
-        user.password = (String) entity.getProperty("password");
-        user.email = (String) entity.getProperty("email");
+
+        KomGikkUser user = new KomGikkUser(entity.getKey().getName());
+        user.entity = entity;
+
+        user.checkProperties();
         return user;
     }
 
+    private void checkProperties() {
+        Preconditions.checkNotNull(entity.getProperty("username"));
+        Preconditions.checkNotNull(entity.getProperty("email"));
+    }
+
+    public JsonKomGikkUser forJson() {
+        JsonKomGikkUser jsonKomGikkUser = new JsonKomGikkUser();
+        jsonKomGikkUser.username = getUsername();
+        jsonKomGikkUser.email = getEmail();
+        jsonKomGikkUser.name = getName();
+
+        return jsonKomGikkUser;
+    }
 }

@@ -2,19 +2,9 @@ package com.marius.komgikk.service;
 
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserServiceFactory;
-import com.google.gson.Gson;
 import com.marius.komgikk.domain.KomGikkUser;
 
-import java.util.Map;
-
 public class UserService {
-
-    public KomGikkUser store(String json) {
-        Map map = new Gson().fromJson(json, Map.class);
-
-        return new KomGikkUser((Map) map.get("params")).store();
-
-    }
 
     public KomGikkUser getCurrentUser() {
         com.google.appengine.api.users.UserService userService = UserServiceFactory.getUserService();
@@ -28,7 +18,7 @@ public class UserService {
 
         KomGikkUser user = KomGikkUser.get(googleUser.getUserId());
         if (user == null) {
-            user = new KomGikkUser(googleUser.getUserId(), googleUser.getEmail(), googleUser.getNickname());
+            user = new KomGikkUser(googleUser.getUserId(), googleUser.getEmail());
             user.store();
         }
         return user;
