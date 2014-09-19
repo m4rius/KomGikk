@@ -10,7 +10,6 @@ public class KomGikkUser {
 
     public KomGikkUser(String username) {
         entity = new Entity(kind, username);
-        entity.setProperty("username", username);
     }
 
     public KomGikkUser(String username, String email) {
@@ -26,7 +25,7 @@ public class KomGikkUser {
     }
 
     public String getUsername() {
-        return (String) entity.getProperty("username");
+        return entity.getKey().getName();
     }
 
     public String getName() {
@@ -81,7 +80,6 @@ public class KomGikkUser {
     }
 
     private void checkProperties() {
-        Preconditions.checkNotNull(entity.getProperty("username"));
         Preconditions.checkNotNull(entity.getProperty("email"));
     }
 
