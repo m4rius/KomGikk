@@ -8,6 +8,7 @@ import com.marius.komgikk.service.UserService;
 import org.joda.time.DateTime;
 
 import javax.ws.rs.*;
+import java.util.List;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
@@ -17,11 +18,12 @@ public class TimeEventApi {
     private UserService userService = new UserService();
 
     @GET
-    @Path("/all")
+    @Path("/list")
     @Produces(APPLICATION_JSON)
     public String list() {
         KomGikkUser currentUser = userService.getCurrentUser();
-        return null;
+        List<JsonTimeEvent> jsonTimeEvents = TimeEvent.allForJson(currentUser, DateTime.now());
+        return new Gson().toJson(jsonTimeEvents);
     }
 
     @POST

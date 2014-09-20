@@ -79,8 +79,8 @@ public class TimeEvent {
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-        Query.Filter minTimeFilter = new Query.FilterPredicate("time", Query.FilterOperator.GREATER_THAN_OR_EQUAL, dateTime.withTimeAtStartOfDay());
-        Query.Filter maxTimeFilter = new Query.FilterPredicate("time", Query.FilterOperator.LESS_THAN_OR_EQUAL, dateTime.withTimeAtStartOfDay().plusDays(1));
+        Query.Filter minTimeFilter = new Query.FilterPredicate("dateTime", Query.FilterOperator.GREATER_THAN_OR_EQUAL, dateTime.withTimeAtStartOfDay().toDate());
+        Query.Filter maxTimeFilter = new Query.FilterPredicate("dateTime", Query.FilterOperator.LESS_THAN_OR_EQUAL, dateTime.withTimeAtStartOfDay().plusDays(1).toDate());
 
 
         Query q = new Query(kind)
@@ -106,7 +106,7 @@ public class TimeEvent {
         jsonTimeEvent.key = KeyFactory.keyToString(entity.getKey());
 
         DateTime dateTime = new DateTime((Date) entity.getProperty("dateTime"));
-        jsonTimeEvent.time = dateTime.toString("HH:mm");
+        jsonTimeEvent.time = dateTime.toString("HH:mm:ss");
         jsonTimeEvent.date = dateTime.toString("yyyy.MM.dd");
         jsonTimeEvent.activityKey = (String) entity.getProperty("activity");
         jsonTimeEvent.specialEvent = (String) entity.getProperty("specialEvent");
