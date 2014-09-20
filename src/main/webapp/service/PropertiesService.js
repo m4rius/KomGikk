@@ -4,7 +4,8 @@ angular.module("komGikkApp")
         return {
             activitiesUrl: "/api/activities",
             activityUrl: "/api/activity",
-            userUrl: "/api/user"
+            userUrl: "/api/user",
+            timeeventUrl: "/api/timeevent"
 
         }
 

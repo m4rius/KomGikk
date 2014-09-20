@@ -1,9 +1,16 @@
 <!-- Main component for a primary marketing message or call to action -->
-<div class="jumbotron">
+<div class="jumbotron" ng-controller="timeCtrl">
     <div class="text-center">
         <h1>Start dag</h1>
         <div class="btn-group btn-group-justified">
-            <a class="btn btn-lg btn-primary" href="#" role="button">Kom</a>
+            <a class="btn btn-lg btn-primary" href="#" role="button" ng-click="doStart()">Kom</a>
+            <a class="btn btn-lg btn-primary" href="#" role="button" ng-click="doEnd()">Gikk</a>
         </div>
+        <table class="table">
+            <tr ng-repeat="event in data.timeevents | orderBy: 'time'">
+                <td>{{event.time}}</td>
+                <td>{{event.specialEvent}}</td>
+            </tr>
+        </table>
     </div>
 </div>

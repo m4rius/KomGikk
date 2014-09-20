@@ -19,5 +19,7 @@ angular.module("komGikkApp")
                 $scope.data.error = error;
             });
 
+        $scope.data.timeevents = [];
+
 
     });
