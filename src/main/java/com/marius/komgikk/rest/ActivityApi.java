@@ -1,5 +1,6 @@
 package com.marius.komgikk.rest;
 
+import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.marius.komgikk.domain.Activity;
 import com.marius.komgikk.domain.JsonActivity;
@@ -15,14 +16,18 @@ public class ActivityApi {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public void storeActivity(String json) {
+    @Produces(MediaType.APPLICATION_JSON)
+    public String storeActivity(String json) {
         JsonActivity jsonActivity = new Gson().fromJson(json, JsonActivity.class);
+
         if ("delete".equals(jsonActivity.action)) {
-            deleteActivity(json);
+            return deleteActivity(json);
         } else {
             Activity activity = new Activity(userService.getCurrentUser(), jsonActivity.name, jsonActivity.sap);
             activity.store();
+            return new Gson().toJson(activity.forJson());
         }
+
     }
 
     @GET
@@ -36,11 +41,14 @@ public class ActivityApi {
 
     //@DELETE
     //TODO: Får ikke til å kalle denne fra GUI
-    public void deleteActivity(String json) {
+    public String deleteActivity(String json) {
         JsonActivity jsonActivity = new Gson().fromJson(json, JsonActivity.class);
+
+        Preconditions.checkNotNull(jsonActivity.key, "Missing key");
 
         Activity activity = Activity.findStored(jsonActivity, userService.getCurrentUser());
         activity.delete();
 
+        return new Gson().toJson(activity.forJson());
     }
 }

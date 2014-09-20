@@ -4,6 +4,7 @@ angular.module("komGikkApp")
         $scope.saveNewActivity = function(newActivity) {
             $http.post(properties.activityUrl, newActivity)
                 .success(function(data) {
+                    newActivity.key = data.key;
                     $scope.data.activities.push(newActivity);
                     $scope.data.newactivity = null;
                 })
