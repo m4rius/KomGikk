@@ -66,7 +66,7 @@ public class Activity {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
         Query q = new Query(Activity.kind)
-                .setAncestor(user.getEntity().getKey())
+                .setAncestor(user.getKey())
                 .setFilter(stateFilter);
 
         PreparedQuery pq = datastore.prepare(q);

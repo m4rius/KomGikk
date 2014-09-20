@@ -59,26 +59,4 @@ public class DatastoreTest {
 
         //TODO: test at listen ikke inneholder project3;
     }
-
-//    @Test
-//    public void testTimeEvent() {
-//        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-//
-//        KomGikkUser user1 = new KomGikkUser("u1", "Nils").store();
-//        Activity a1 = new Activity(user1, "Project1", "xx").store();
-//
-//        new TimeEvent(user1, DateTime.now(), a1).store();
-//
-//        assertEquals(1, ds.prepare(new Query(TimeEvent.kind)).countEntities(withLimit(10)));
-//
-//        List<TimeEvent> all = TimeEvent.get(user1);
-//
-//
-//        assertEquals(1, all.size());
-//
-//
-//
-//    }
-
-
 }

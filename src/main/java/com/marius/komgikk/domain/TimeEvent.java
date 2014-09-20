@@ -1,6 +1,8 @@
 package com.marius.komgikk.domain;
 
 import com.google.appengine.api.datastore.*;
+import com.google.appengine.repackaged.com.google.common.base.Function;
+import com.google.appengine.repackaged.com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
@@ -9,74 +11,116 @@ import java.util.List;
 
 public class TimeEvent {
 
-    public static final String kind = "TimeEvent";
+    public static final String kind = "TIME_EVENT";
 
-    private KomGikkUser user;
-    private DateTime started;
-    private Activity activity;
-    private String key;
-
-    private TimeEvent() {
+    public enum TimeEventSpecialType {
+        START, END
     }
 
-    public TimeEvent(KomGikkUser user, DateTime started, Activity activity) {
-        this.user = user;
-        this.started = started;
-        this.activity = activity;
+    private Entity entity;
+
+    /*
+    Constructors
+     */
+
+    private TimeEvent(Entity entity) {
+        this.entity = entity;
     }
 
-    public KomGikkUser getUser() {
-        return user;
+    private TimeEvent(KomGikkUser user, DateTime time, String activity, TimeEventSpecialType type) {
+        this.entity = new Entity(kind, user.getKey());
+        setTime(time);
+
+        if (activity != null) {
+            setActivity(activity);
+        }
+
+        if (type != null) {
+            setTimeEventSpecialType(type);
+        }
     }
 
-    public DateTime getStarted() {
-        return started;
+    public TimeEvent(KomGikkUser user, DateTime time, String activity) {
+        this(user, time, activity, null);
     }
 
-    public Activity getActivity() {
-        return activity;
+    public TimeEvent(KomGikkUser user, DateTime time, TimeEventSpecialType type) {
+        this(user, time, null, type);
+
     }
 
-    public TimeEvent store() {
+    /*
+    Getters and setters
+     */
+
+    public void setTime(DateTime time) {
+        entity.setProperty("dateTime", time.toDate());
+    }
+
+    private void setTimeEventSpecialType(TimeEventSpecialType type) {
+        entity.setProperty("specialEvent", type.name());
+
+    }
+
+    private void setActivity(String activity) {
+        entity.setProperty("activity", activity);
+    }
+
+    /*
+     * Datastore
+     */
+
+    public void store() {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        Entity entity = new Entity(kind);
-        entity.setProperty("user", user.getUsername());
-        entity.setProperty("started", started.toDate());
-        entity.setProperty("activity", activity.getKeyString());
         datastore.put(entity);
-
-        return this;
     }
 
-    public static List<TimeEvent> get(KomGikkUser user) {
-        Query.Filter userFilter = new Query.FilterPredicate("user", Query.FilterOperator.EQUAL, user.getUsername());
+    public static List<TimeEvent> all(KomGikkUser user, DateTime dateTime) {
+
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-        Query q = new Query(kind).setFilter(userFilter);
+        Query.Filter minTimeFilter = new Query.FilterPredicate("time", Query.FilterOperator.GREATER_THAN_OR_EQUAL, dateTime.withTimeAtStartOfDay());
+        Query.Filter maxTimeFilter = new Query.FilterPredicate("time", Query.FilterOperator.LESS_THAN_OR_EQUAL, dateTime.withTimeAtStartOfDay().plusDays(1));
 
-        PreparedQuery pq = datastore.prepare(q);
+
+        Query q = new Query(kind)
+                .setAncestor(user.getKey())
+                .setFilter(Query.CompositeFilterOperator.and(minTimeFilter, maxTimeFilter));
+
+        PreparedQuery preparedQuery = datastore.prepare(q);
 
         List<TimeEvent> result = new ArrayList<>();
-        for (Entity entity : pq.asIterable()) {
-            result.add(TimeEvent.from(entity, user));
+        for (Entity entity : preparedQuery.asIterable()) {
+            result.add(new TimeEvent(entity));
         }
 
         return result;
     }
 
-    private static TimeEvent from(Entity entity, KomGikkUser user) {
-        TimeEvent te = new TimeEvent();
-        te.key = KeyFactory.keyToString(entity.getKey());
-        te.user = user;
-        te.started = new DateTime(((Date) entity.getProperty("started")).getTime());
+    /*
+     * Json
+     */
 
-        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        try {
-            Entity entityActivity = datastore.get(KeyFactory.stringToKey((String) entity.getProperty("activity")));
-            te.activity = Activity.from(entityActivity, user);
-        } catch (EntityNotFoundException e) {
-        }
+    public JsonTimeEvent forJson() {
+        JsonTimeEvent jsonTimeEvent = new JsonTimeEvent();
+        jsonTimeEvent.key = KeyFactory.keyToString(entity.getKey());
 
-        return te;
+        DateTime dateTime = new DateTime((Date) entity.getProperty("dateTime"));
+        jsonTimeEvent.time = dateTime.toString("HH:mm");
+        jsonTimeEvent.date = dateTime.toString("yyyy.MM.dd");
+        jsonTimeEvent.activityKey = (String) entity.getProperty("activity");
+        jsonTimeEvent.specialEvent = (String) entity.getProperty("specialEvent");
+
+        return jsonTimeEvent;
+    }
+
+    public static List<JsonTimeEvent> allForJson(KomGikkUser user, DateTime dateTime) {
+        List<TimeEvent> timeEvents = all(user, dateTime);
+
+        return Lists.transform(timeEvents, new Function<TimeEvent, JsonTimeEvent>() {
+            public JsonTimeEvent apply(TimeEvent i) {
+                return i.forJson();
+            }
+        });
     }
 }

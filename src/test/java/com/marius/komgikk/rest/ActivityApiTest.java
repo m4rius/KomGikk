@@ -3,7 +3,6 @@ package com.marius.komgikk.rest;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.gson.Gson;
 import com.marius.komgikk.domain.Activity;
@@ -18,14 +17,14 @@ import org.junit.Test;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
-import java.util.HashMap;
 
-import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
+import static com.marius.komgikk.rest.DataStoreTestUtil.assertNumberOfEntitiesStored;
+import static com.marius.komgikk.rest.DataStoreTestUtil.storeDefaultUser;
 import static org.junit.Assert.assertEquals;
 
 public class ActivityApiTest extends JerseyTest {
 
-    private LocalServiceTestHelper helper;
+    private LocalServiceTestHelper helper = DataStoreTestUtil.getLocalServiceTestHelperWithUser();
 
 
     @Override
@@ -35,17 +34,6 @@ public class ActivityApiTest extends JerseyTest {
 
     @Before
     public void setup() {
-        HashMap<String, Object> envAttr = new HashMap<String, Object>();
-        envAttr.put("com.google.appengine.api.users.UserService.user_id_key", "10");
-
-        helper =
-                new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig())
-                        .setEnvIsAdmin(true)
-                        .setEnvEmail("test@test.com")
-                        .setEnvAuthDomain("domain")
-                        .setEnvAttributes(envAttr)
-                        .setEnvIsLoggedIn(true);
-
         helper.setUp();
     }
 
@@ -70,8 +58,7 @@ public class ActivityApiTest extends JerseyTest {
 
     @Test
     public void testStore() {
-        KomGikkUser user = new KomGikkUser("10", "test@test.no");
-        user.store();
+        storeDefaultUser();
 
         JsonActivity post = new JsonActivity();
         post.name = "aktivitet";
@@ -79,15 +66,13 @@ public class ActivityApiTest extends JerseyTest {
 
         target("activity").request().post(Entity.json(new Gson().toJson(post)));
 
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-
-        assertEquals(1, ds.prepare(new Query(Activity.kind)).countEntities(withLimit(10)));
+        assertNumberOfEntitiesStored(Activity.kind, 1);
     }
 
     @Test
     public void testDelete() {
-        KomGikkUser user = new KomGikkUser("10", "test@test.no");
-        user.store();
+        KomGikkUser user = storeDefaultUser();
+
         Activity activity = new Activity(user, "aktivitet", "sap");
         activity.store();
 
