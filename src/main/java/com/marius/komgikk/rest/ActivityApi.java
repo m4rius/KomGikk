@@ -26,13 +26,15 @@ public class ActivityApi {
     }
 
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("{key}")
-    public void getActivity(@PathParam("key") String key) {
-        System.out.println(key);
+    public String getActivity(@PathParam("key") String key) {
+        JsonActivity activity = Activity.getByKey(key, userService.getCurrentUser()).forJson();
+        return new Gson().toJson(activity);
     }
 
 
-    @DELETE
+    //@DELETE
     //TODO: Får ikke til å kalle denne fra GUI
     public void deleteActivity(String json) {
         JsonActivity jsonActivity = new Gson().fromJson(json, JsonActivity.class);

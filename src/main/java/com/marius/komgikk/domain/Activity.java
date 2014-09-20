@@ -31,7 +31,7 @@ public class Activity {
         return (String) entity.getProperty("sap");
     }
 
-    public String getKey() {
+    public String getKeyString() {
         return KeyFactory.keyToString(entity.getKey());
     }
 
@@ -44,6 +44,14 @@ public class Activity {
     public void delete() {
         entity.setProperty("state", ActivityState.HISTORIC.name());
         store();
+    }
+
+    public JsonActivity forJson() {
+        JsonActivity activity = new JsonActivity();
+        activity.key = KeyFactory.keyToString(entity.getKey());
+        activity.name = (String) entity.getProperty("name");
+        activity.sap = (String) entity.getProperty("sap");
+        return activity;
     }
 
     public static Activity from(Entity entity, KomGikkUser user) {
@@ -65,7 +73,7 @@ public class Activity {
 
         List<JsonActivity> result = new ArrayList<>();
         for (Entity entity : pq.asIterable()) {
-            result.add(JsonActivity.from(entity));
+            result.add(Activity.from(entity, user).forJson());
         }
 
         return result;
@@ -81,8 +89,19 @@ public class Activity {
         }
     }
 
+    public static Activity getByKey(String key, KomGikkUser user) {
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        try {
+            Entity entity = datastore.get(KeyFactory.stringToKey(key));
+            return Activity.from(entity, user);
+        } catch (EntityNotFoundException e) {
+            return null;
+        }
+    }
 
-    private enum ActivityState {
+
+
+    public enum ActivityState {
         CURRENT, HISTORIC
     }
 }

@@ -42,7 +42,7 @@ public class TimeEvent {
         Entity entity = new Entity(kind);
         entity.setProperty("user", user.getUsername());
         entity.setProperty("started", started.toDate());
-        entity.setProperty("activity", activity.getKey());
+        entity.setProperty("activity", activity.getKeyString());
         datastore.put(entity);
 
         return this;

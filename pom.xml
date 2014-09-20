@@ -62,6 +62,12 @@
             <!-- use the following artifactId if you don't need servlet 2.x compatibility -->
             <!-- artifactId>jersey-container-servlet</artifactId -->
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.test-framework.providers</groupId>
+            <artifactId>jersey-test-framework-provider-inmemory</artifactId>
+            <version>2.12</version>
+            <scope>test</scope>
+        </dependency>
 
         <dependency>
             <groupId>com.google.guava</groupId>
