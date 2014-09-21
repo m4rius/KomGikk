@@ -3,13 +3,17 @@
     <div class="text-center">
         <h1>Start dag</h1>
         <div class="btn-group btn-group-justified">
-            <a class="btn btn-lg btn-primary" href="#" role="button" ng-click="doStart()">Kom</a>
-            <a class="btn btn-lg btn-primary" href="#" role="button" ng-click="doEnd()">Gikk</a>
+            <a class="btn btn-lg btn-primary" href="#" role="button" ng-click="doStart()" ng-show="showSpecialEventButton('START')">Kom</a>
+            <a class="btn btn-lg btn-primary" href="#" role="button" ng-click="doEnd()" ng-show="showSpecialEventButton('END')">Gikk</a>
+        </div>
+
+        <div class="btn-group btn-group-justified" ng-repeat="activity in data.activities | orderBy: 'name'">
+            <a class="btn btn-primary" href="#" role="button" ng-click="startActivity(activity)" ng-show="showActivityButton(activity)">{{activity.name}}</a>
         </div>
         <table class="table">
             <tr ng-repeat="event in data.timeevents | orderBy: 'time'">
                 <td>{{event.time}}</td>
-                <td>{{event.specialEvent}}</td>
+                <td>{{event.specialEvent}}{{getActivityName(event.activityKey)}}</td>
             </tr>
         </table>
     </div>

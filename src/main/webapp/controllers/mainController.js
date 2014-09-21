@@ -6,6 +6,7 @@ angular.module("komGikkApp")
         $http.get(properties.activitiesUrl)
             .success(function(data) {
                 $scope.data.activities = data;
+
             })
             .error(function(error) {
                $scope.data.error = error;
@@ -19,7 +20,12 @@ angular.module("komGikkApp")
                 $scope.data.error = error;
             });
 
-        $scope.data.timeevents = [];
-
+        $http.get(properties.timeeventUrl + "/list")
+            .success(function(data) {
+                $scope.data.timeevents = data;
+            })
+            .error(function (error) {
+                $scope.data.error = error;
+            })
 
     });
