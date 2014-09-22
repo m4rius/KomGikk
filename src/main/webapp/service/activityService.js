@@ -19,8 +19,28 @@ angular.module("komGikkApp")
 
             },
 
+            removeActivity: function(scopeDate, activity) {
+                var index;
+                for (index = 0; index < scopeDate.activities.length ; ++index) {
+                    if (scopeDate.activities[index].key == activity.key) {
+                        scopeDate.activities.splice(index ,1);
+                        break;
+                    }
+                }
+
+            },
+
+            updateActivity: function(scopeDate, updatedActivity) {
+                //remove will remove original (uses key)
+                this.removeActivity(scopeDate, updatedActivity);
+
+                //add the updated
+                this.addActivity(scopeDate, updatedActivity);
+
+            },
+
             findActivityByKey: function(activityKey, scopeData) {
-                console.log("findActivityByKey")
+                console.log("findActivityByKey");
                 var activity = scopeData.activitiesByKey[activityKey];
                 if (angular.isUndefined(activity)) {
                     return "missing activity";

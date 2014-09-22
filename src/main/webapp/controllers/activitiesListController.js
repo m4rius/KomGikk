@@ -3,8 +3,8 @@ angular.module("komGikkApp")
 
         $scope.saveNewActivity = function(newActivity) {
             $http.post(properties.activityUrl, newActivity)
-                .success(function(data) {
-                    newActivity.key = data.key;
+                .success(function(returnValue) {
+                    newActivity.key = returnValue.key;
                     $scope.data.newactivity = null;
 
                     activityService.addActivity($scope.data, newActivity);
@@ -15,6 +15,22 @@ angular.module("komGikkApp")
                 .finally(function() {
                     $location.path("/activities");
                 });
+
+        };
+
+        $scope.updateActivity = function(updatedActivity) {
+            $http.put(properties.activityUrl, updatedActivity)
+                .success(function(returnValue) {
+                    activityService.updateActivity($scope.data, returnValue);
+
+                })
+                .error(function(error) {
+                    console.log("Feil ved oppdatering av aktivitet: " + error);
+                })
+                .finally(function() {
+                    $location.path("/activities");
+                });
+
         };
 
         $scope.deleteActivity = function(activity) {
@@ -23,17 +39,12 @@ angular.module("komGikkApp")
             activity.action = "delete";
             $http.post(properties.activityUrl, activity)
                 .success(function(data) {
-                    var index = -1;
-                    for (var i = 0; i < $scope.data.activities.length; i++) {
-                        if ($scope.data.activities[i].key == activity.key) {
-                            index = i;
-                        }
-                    }
-                    if (index >= 0) {
-                        $scope.data.activities.splice(index, 1);
-                    }
+                    activityService.removeActivity($scope.data, activity);
                 })
+        };
 
+        $scope.selectActivityForUpdate = function(activity) {
+            $scope.data.activityToUpdate = activity;
         }
 
 

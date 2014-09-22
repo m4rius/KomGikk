@@ -46,10 +46,10 @@ public class ActivityApiTest extends JerseyTest {
     public void testGet() {
         KomGikkUser user = new KomGikkUser("10", "test@test.no");
         user.store();
-        Activity activity = new Activity(user, "aktivitet", "sap");
+        Activity activity = new Activity(user, "aktivitet", "sap", "c1");
         activity.store();
 
-        String expectedJson = "{\"key\":\"" + activity.getKeyString() + "\",\"name\":\"aktivitet\",\"sap\":\"sap\"}";
+        String expectedJson = "{\"key\":\"" + activity.getKeyString() + "\",\"name\":\"aktivitet\",\"sap\":\"sap\",\"category\":\"c1\"}";
         String result = target("activity/" + activity.getKeyString()).request().get(String.class);
 
         Assert.assertEquals(expectedJson, result);
@@ -73,7 +73,7 @@ public class ActivityApiTest extends JerseyTest {
     public void testDelete() {
         KomGikkUser user = storeDefaultUser();
 
-        Activity activity = new Activity(user, "aktivitet", "sap");
+        Activity activity = new Activity(user, "aktivitet", "sap", "c2");
         activity.store();
 
         JsonActivity post = new JsonActivity();

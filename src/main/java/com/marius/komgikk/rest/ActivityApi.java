@@ -17,16 +17,32 @@ public class ActivityApi {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String storeActivity(String json) {
+    public String newActivity(String json) {
         JsonActivity jsonActivity = new Gson().fromJson(json, JsonActivity.class);
 
+        //todo burde vært i @DELETE
         if ("delete".equals(jsonActivity.action)) {
             return deleteActivity(json);
         } else {
-            Activity activity = new Activity(userService.getCurrentUser(), jsonActivity.name, jsonActivity.sap);
+            Activity activity = new Activity(userService.getCurrentUser(), jsonActivity.name, jsonActivity.sap, jsonActivity.category);
             activity.store();
             return new Gson().toJson(activity.forJson());
         }
+    }
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String updateActivity(String json) {
+        JsonActivity jsonActivity = new Gson().fromJson(json, JsonActivity.class);
+
+        if (jsonActivity.key == null) {
+            return newActivity(json);
+        } else {
+            Activity activity = Activity.update(jsonActivity, userService.getCurrentUser());
+            return new Gson().toJson(activity.forJson());
+        }
+
 
     }
 

@@ -48,9 +48,9 @@ public class DatastoreTest {
         KomGikkUser user1 = new KomGikkUser("u1", "Nils", "test1@test.no").store();
         KomGikkUser user2 = new KomGikkUser("u2", "Ola", "test2@test.no").store();
 
-        new Activity(user1, "Project1", "xx").store();
-        new Activity(user1, "Project2", "yy").store();
-        new Activity(user2, "Project3", "zz").store();
+        new Activity(user1, "Project1", "xx", "c2").store();
+        new Activity(user1, "Project2", "yy", "c2").store();
+        new Activity(user2, "Project3", "zz", "c2").store();
 
         assertEquals(3, ds.prepare(new Query(Activity.kind)).countEntities(withLimit(10)));
 

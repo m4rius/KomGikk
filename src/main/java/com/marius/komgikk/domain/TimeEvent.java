@@ -6,7 +6,6 @@ import com.google.appengine.repackaged.com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class TimeEvent {
@@ -105,7 +104,7 @@ public class TimeEvent {
         JsonTimeEvent jsonTimeEvent = new JsonTimeEvent();
         jsonTimeEvent.key = KeyFactory.keyToString(entity.getKey());
 
-        DateTime dateTime = new DateTime((Date) entity.getProperty("dateTime"));
+        DateTime dateTime = new DateTime(entity.getProperty("dateTime"));
         jsonTimeEvent.time = dateTime.toString("HH:mm:ss");
         jsonTimeEvent.date = dateTime.toString("yyyy.MM.dd");
         jsonTimeEvent.activityKey = (String) entity.getProperty("activity");

@@ -4,6 +4,7 @@
         <tr>
             <th>Navn</th>
             <th>SAP</th>
+            <th>Kategori</th>
             <th></th>
         </tr>
         </thead>
@@ -11,8 +12,9 @@
         <tr ng-repeat="item in data.activities | orderBy: 'name'">
             <td>{{item.name}}</td>
             <td>{{item.sap}}</td>
+            <td>{{item.category}}</td>
             <td>
-                <button type="button" class="btn btn-xs btn-warning">Endre</button>
+                <a href="#/updateactivity" class="btn btn-xs btn-warning" ng-click="selectActivityForUpdate(item)">Endre</a>
                 <button type="button" class="btn btn-xs btn-danger" ng-click="deleteActivity(item)">Slette</button>
             </td>
         </tr>
