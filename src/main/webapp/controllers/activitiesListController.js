@@ -1,12 +1,13 @@
 angular.module("komGikkApp")
-    .controller("activitiesListCtrl", function ($scope, $location, $http, properties) {
+    .controller("activitiesListCtrl", function ($scope, $location, $http, properties, activityService) {
 
         $scope.saveNewActivity = function(newActivity) {
             $http.post(properties.activityUrl, newActivity)
                 .success(function(data) {
                     newActivity.key = data.key;
-                    $scope.data.activities.push(newActivity);
                     $scope.data.newactivity = null;
+
+                    activityService.addActivity($scope.data, newActivity);
                 })
                 .error(function(error) {
                     $scope.data.activityStoreError = error;

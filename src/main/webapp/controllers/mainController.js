@@ -1,5 +1,5 @@
 angular.module("komGikkApp")
-    .controller("mainCtrl", function ($scope, $http, properties) {
+    .controller("mainCtrl", function ($scope, $http, properties, activityService) {
 
         $scope.data = {};
 
@@ -22,7 +22,12 @@ angular.module("komGikkApp")
 
         $http.get(properties.timeeventUrl + "/list")
             .success(function(data) {
-                $scope.data.timeevents = data;
+                var index;
+                if (angular.isArray(data)) {
+                    for (index = 0; index < data.length; ++index) {
+                        activityService.addActivity(data[index]);
+                    }
+                }
             })
             .error(function (error) {
                 $scope.data.error = error;

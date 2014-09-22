@@ -3,15 +3,29 @@ angular.module("komGikkApp")
 
         return {
 
-            findActivityByKey: function(activityKey, activities) {
-                var index;
-                for (index = 0; index < activities.length; ++index) {
-                    if (activities[index].key == activityKey) {
-                        return activities[index].name;
-                    }
+
+            addActivity : function(data, activity) {
+                if (angular.isUndefined(data.activities)) {
+                    data.activities = [];
                 }
-                console.log("unable to find activity with key " + activityKey);
-                return "missing activity";
+
+                if (angular.isUndefined(data.activitiesByKey)) {
+                    data.activitiesByKey = {};
+                }
+
+                data.activities.push(activity);
+                data.activitiesByKey[activity.key] = activity;
+
+
+            },
+
+            findActivityByKey: function(activityKey, data) {
+                console.log("findActivityByKey")
+                var activity = data.activitiesByKey[activityKey];
+                if (angular.isUndefined(activity)) {
+                    return "missing activity";
+                }
+                return activity;
             },
 
             //TODO grisetet logikk
@@ -44,6 +58,8 @@ angular.module("komGikkApp")
 
                 return false;
             }
+
+
 
         }
     });

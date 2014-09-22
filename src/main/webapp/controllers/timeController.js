@@ -58,7 +58,7 @@ angular.module("komGikkApp")
                 return "";
             }
 
-            return activityService.findActivityByKey(activityKey, $scope.data.activities);
+            return activityService.findActivityByKey(activityKey, $scope.data);
         }
 
 
