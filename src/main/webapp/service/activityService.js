@@ -16,6 +16,11 @@ angular.module("komGikkApp")
 
             //TODO grisetet logikk
             isStarted: function(timeEvents) {
+
+                if (angular.isUndefined(timeEvents)) {
+                    return false;
+                }
+
                 var index;
 
                 var stated = false;
