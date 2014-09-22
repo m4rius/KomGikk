@@ -36,12 +36,6 @@ public class KomGikkUser {
         return (String) entity.getProperty("email");
     }
 
-    //TODO bare gi ut key
-    @Deprecated
-    public Entity getEntity() {
-        return entity;
-    }
-
     public Key getKey() {
         return entity.getKey();
     }
