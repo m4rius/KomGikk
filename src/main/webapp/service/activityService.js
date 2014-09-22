@@ -4,24 +4,24 @@ angular.module("komGikkApp")
         return {
 
 
-            addActivity : function(data, activity) {
-                if (angular.isUndefined(data.activities)) {
-                    data.activities = [];
+            addActivity : function(scopeData, activity) {
+                if (angular.isUndefined(scopeData.activities)) {
+                    scopeData.activities = [];
                 }
 
-                if (angular.isUndefined(data.activitiesByKey)) {
-                    data.activitiesByKey = {};
+                if (angular.isUndefined(scopeData.activitiesByKey)) {
+                    scopeData.activitiesByKey = {};
                 }
 
-                data.activities.push(activity);
-                data.activitiesByKey[activity.key] = activity;
+                scopeData.activities.push(activity);
+                scopeData.activitiesByKey[activity.key] = activity;
 
 
             },
 
-            findActivityByKey: function(activityKey, data) {
+            findActivityByKey: function(activityKey, scopeData) {
                 console.log("findActivityByKey")
-                var activity = data.activitiesByKey[activityKey];
+                var activity = scopeData.activitiesByKey[activityKey];
                 if (angular.isUndefined(activity)) {
                     return "missing activity";
                 }
