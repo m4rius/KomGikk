@@ -1,1 +1,15 @@
 Sortering av aktiviteter med drag&drop :https://github.com/angular-ui/ui-sortable
+
+confirm på slette
+
+Legg til aktivitet venstr justert
+
+GJøre brand til link til "om"
+
+Legge aktiviteter under profil
+
+Endre profil til innstillinger
+
+Ikke så store knapper
+
+

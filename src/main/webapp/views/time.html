@@ -1,20 +1,43 @@
 <!-- Main component for a primary marketing message or call to action -->
-<div class="jumbotron" ng-controller="timeCtrl">
-    <div class="text-center">
-        <h1>Start dag</h1>
-        <div class="btn-group btn-group-justified">
-            <a class="btn btn-lg btn-primary" href="#" role="button" ng-click="doStart()" ng-show="showSpecialEventButton('START')">Kom</a>
-            <a class="btn btn-lg btn-primary" href="#" role="button" ng-click="doEnd()" ng-show="showSpecialEventButton('END')">Gikk</a>
+
+<div class="text-center">
+    <h2>Timeføring</h2>
+
+</div>
+<div ng-controller="timeCtrl" class="container-fluid">
+<div class="row">
+    <div class="col-md-6">
+        <div class="text-center">
+
+            <div class="btn-group btn-group-justified">
+                <a class="btn btn-lg btn-success" href="#" role="button" ng-click="doStart()" ng-show="showSpecialEventButton('START')">Kom</a>
+                <a class="btn btn-lg btn-success" href="#" role="button" ng-click="doEnd()" ng-show="showSpecialEventButton('END')">Gikk</a>
+            </div>
+            <br>
         </div>
 
-        <div class="btn-group btn-group-justified" ng-repeat="activity in data.activities | orderBy: 'name'">
-            <a class="btn btn-primary" href="#" role="button" ng-click="startActivity(activity)" ng-show="showActivityButton(activity)">{{activity.name}}</a>
+
+        <div ng-repeat="activity in data.activities | orderBy: 'category' | orderBy: 'name'">
+            <h5>{{activity.category}}</h5>
+            <div class="btn-group btn-group-justified">
+                <a class="btn btn-primary"
+                   href="#"
+                   role="button"
+                   ng-click="startActivity(activity)"
+                   ng-show="showActivityButton(activity)">
+                    {{activity.name}}
+                </a>
+            </div>
         </div>
-        <table class="table">
+    </div>
+    <div class="col-md-6">
+        <table class="table table-bordered">
             <tr ng-repeat="event in data.timeevents | orderBy: 'time'">
                 <td>{{event.time}}</td>
                 <td>{{event.specialEvent}}{{getActivityName(event.activityKey)}}</td>
             </tr>
         </table>
     </div>
+
+</div>
 </div>

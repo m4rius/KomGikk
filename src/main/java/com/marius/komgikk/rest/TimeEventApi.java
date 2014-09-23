@@ -6,6 +6,7 @@ import com.marius.komgikk.domain.KomGikkUser;
 import com.marius.komgikk.domain.TimeEvent;
 import com.marius.komgikk.service.UserService;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import javax.ws.rs.*;
 import java.util.List;
@@ -33,14 +34,16 @@ public class TimeEventApi {
         JsonTimeEvent jsonTimeEvent = new Gson().fromJson(json, JsonTimeEvent.class);
         KomGikkUser currentUser = userService.getCurrentUser();
 
+        DateTimeZone dateTimeZone = DateTimeZone.forID("Europe/Oslo");
+
         TimeEvent timeEvent;
         if (jsonTimeEvent.specialEvent != null) {
             timeEvent = new TimeEvent(
                     currentUser,
-                    DateTime.now(),
+                    DateTime.now(dateTimeZone),
                     TimeEvent.TimeEventSpecialType.valueOf(jsonTimeEvent.specialEvent));
         } else {
-            timeEvent = new TimeEvent(currentUser, DateTime.now(), jsonTimeEvent.activityKey);
+            timeEvent = new TimeEvent(currentUser, DateTime.now(dateTimeZone), jsonTimeEvent.activityKey);
         }
 
         timeEvent.store();
