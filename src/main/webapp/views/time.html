@@ -1,39 +1,41 @@
-<!-- Main component for a primary marketing message or call to action -->
-
-<div class="text-center">
-    <h2>Timeføring</h2>
-
-</div>
 <div ng-controller="timeCtrl" class="container-fluid">
+<div class="row">
+    <div class="col-md-12">
+        <h2>Timeføring</h2>
+    </div>
+</div>
 <div class="row">
     <div class="col-md-6">
         <div class="text-center">
 
             <div class="btn-group btn-group-justified">
-                <a class="btn btn-lg btn-success" href="#" role="button" ng-click="doStart()" ng-show="showSpecialEventButton('START')">Kom</a>
-                <a class="btn btn-lg btn-success" href="#" role="button" ng-click="doEnd()" ng-show="showSpecialEventButton('END')">Gikk</a>
+                <a class="btn btn-lg btn-success" href="#" role="button" ng-click="doStart()" ng-show="showStart()">Kom</a>
+                <a class="btn btn-lg btn-success" href="#" role="button" ng-click="doEnd()" ng-show="showEnd()">Gikk</a>
             </div>
             <br>
         </div>
 
 
-        <div ng-repeat="activity in data.activities | orderBy: 'category' | orderBy: 'name'">
-            <h5>{{activity.category}}</h5>
-            <div class="btn-group btn-group-justified">
-                <a class="btn btn-primary"
-                   href="#"
-                   role="button"
-                   ng-click="startActivity(activity)"
-                   ng-show="showActivityButton(activity)">
-                    {{activity.name}}
-                </a>
+        <div class="text-center"  ng-show="showActivityButtons()">
+            <div ng-repeat="activity in data.activities | orderBy: 'category' | orderBy: 'name'">
+                <h4 class="text-left"><small>{{activity.category}}</small></h4>
+                <div class="btn-group btn-group-justified">
+                    <a class="btn"
+                       href="#"
+                       role="button"
+                       ng-click="startActivity(activity)"
+                       ng-class="activityButtonClass(activity)">
+                        {{activity.name}}
+                    </a>
+                </div>
             </div>
+            <br>
         </div>
     </div>
     <div class="col-md-6">
         <table class="table table-bordered">
-            <tr ng-repeat="event in data.timeevents | orderBy: 'time'">
-                <td>{{event.time}}</td>
+            <tr ng-repeat="event in data.events.list | orderBy: 'time'">
+                <td>{{event.date}} {{event.time}}</td>
                 <td>{{event.specialEvent}}{{getActivityName(event.activityKey)}}</td>
             </tr>
         </table>

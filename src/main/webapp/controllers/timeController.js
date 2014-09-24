@@ -1,56 +1,46 @@
 angular.module("komGikkApp")
-    .controller("timeCtrl", function($scope, $http, properties, activityService) {
+    .controller("timeCtrl", function($scope, $http, properties, activityService, timeEventService) {
 
-        var currentAction = null;
-
-        function postJson(json) {
+        function postNewTimeEvent(json) {
             $http.post(properties.timeeventUrl, json)
-                .success(function(data) {
-                    $scope.data.timeevents.push(data);
+                .success(function(returnValue) {
+                    timeEventService.addNewTimeEvent($scope.data, returnValue);
                 })
         }
 
         $scope.doStart = function() {
-            postJson("{\"specialEvent\":\"START\"}");
+            postNewTimeEvent("{\"specialEvent\":\"START\"}");
         };
 
         $scope.doEnd = function() {
-            postJson("{\"specialEvent\":\"END\"}");
+            postNewTimeEvent("{\"specialEvent\":\"END\"}");
         };
 
         $scope.startActivity = function (activity) {
             //post new save timeevent
-            currentAction = activity.key;
-            postJson("{\"activityKey\":\"" + activity.key + "\"}");
+            postNewTimeEvent("{\"activityKey\":\"" + activity.key + "\"}");
         };
 
-        //TODO grisetet logikk
-        //TODO: hvorfor blir denne kalt så mange ganger?
-        $scope.showSpecialEventButton = function(type) {
-            var started = activityService.isStarted($scope.data.timeevents);
-            var typeIsStart = type == 'START';
-            var typeIsEnd = type == 'END';
-
-            if (started && typeIsStart) {
-                return false;
-            }
-            if (started && typeIsEnd) {
-                return true;
-            }
-
-            if (!started && typeIsStart) {
-                return true;
-            }
-
-            if (!started && typeIsEnd) {
-                return false;
-            }
-
-            return false;
+        $scope.showStart = function() {
+            return !$scope.data.events.isStarted;
         };
 
-        $scope.showActivityButton = function(activity) {
-            return activity.key != currentAction;
+        $scope.showEnd = function() {
+            return $scope.data.events.isStarted && !$scope.data.events.isEnded;
+        };
+
+        $scope.showActivityButtons = function() {
+            return $scope.data.events.isStarted && !$scope.data.events.isEnded;
+        };
+
+        $scope.activityButtonClass = function(activity) {
+            if ($scope.data.events.currentAction == null) {
+                return "btn-primary";
+            }
+            if ($scope.data.events.currentAction == activity.key) {
+                return "btn-warning"
+            }
+            return "btn-primary";
         };
 
         $scope.getActivityName = function(activityKey) {

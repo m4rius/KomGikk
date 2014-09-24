@@ -1,7 +1,8 @@
 angular.module("komGikkApp")
-    .controller("mainCtrl", function ($scope, $http, properties, activityService) {
+    .controller("mainCtrl", function ($scope, $http, properties, activityService, timeEventService) {
 
         $scope.data = {};
+        timeEventService.initTimeEvents($scope.data);
 
         $http.get(properties.activitiesUrl)
             .success(function(returnValue) {
@@ -28,7 +29,7 @@ angular.module("komGikkApp")
 
         $http.get(properties.timeeventUrl + "/list")
             .success(function(returnValue) {
-                $scope.data.timeevents = returnValue;
+                timeEventService.addAllTimeEvents($scope.data, returnValue);
             })
             .error(function (error) {
                 console.log("Feil ved henting av timeevents: " + error);

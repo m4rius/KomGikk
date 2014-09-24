@@ -23,7 +23,8 @@ public class TimeEventApi {
     @Produces(APPLICATION_JSON)
     public String list() {
         KomGikkUser currentUser = userService.getCurrentUser();
-        List<JsonTimeEvent> jsonTimeEvents = TimeEvent.allForJson(currentUser, DateTime.now());
+        DateTimeZone dateTimeZone = DateTimeZone.forID("Europe/Oslo");
+        List<JsonTimeEvent> jsonTimeEvents = TimeEvent.allForJson(currentUser, DateTime.now(dateTimeZone));
         return new Gson().toJson(jsonTimeEvents);
     }
 
