@@ -4,9 +4,8 @@ angular.module("komGikkApp")
 
         $scope.menu = [
             {id: 1, name: "Registrere tid", url: "#/time"},
-            {id: 2, name: "Aktivteter", url: "#/activities"},
             {id: 3, name: "Ukeliste", url: "#/summary"},
-            {id: 4, name: "Profil", url: "#/user"}
+            {id: 4, name: "Innstillinger", url: "#/settings"}
         ];
 
         var selectedMenuItem = 1;

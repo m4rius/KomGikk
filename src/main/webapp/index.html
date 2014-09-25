@@ -32,11 +32,13 @@
                 $routeProvider.when("/summary", { templateUrl: "views/summary.html"});
                 $routeProvider.when("/updateactivity", { templateUrl: "views/updateActivity.html"});
                 $routeProvider.when("/newactivity", { templateUrl: "views/newActivity.html"});
-                $routeProvider.when("/user", { templateUrl: "views/user.html"});
+                $routeProvider.when("/settings", { templateUrl: "views/settings.html"});
+                $routeProvider.when("/about", { templateUrl: "views/about.html"});
                 $routeProvider.otherwise({ templateUrl: "views/time.html"});
             })
         ;
     </script>
+    <script src="/service/commonDirectives.js"></script>
     <script src="/service/PropertiesService.js"></script>
     <script src="/controllers/mainController.js"></script>
     <script src="/controllers/menuController.js"></script>

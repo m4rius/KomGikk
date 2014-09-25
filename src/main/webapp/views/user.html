@@ -6,7 +6,7 @@
 
 <h2>Profil</h2>
 
-<div class="jumbotron" ng-controller="userCtrl">
+<div class="well" ng-controller="userCtrl">
     <form name="editUserForm" novalidate>
 
         <div class="form-group">
@@ -15,7 +15,7 @@
             <span class="error" ng-show="editUserForm.name.$error.required">Legg inn navn</span>
         </div>
 
-        <div class="text-center">
+        <div>
             <button ng-disabled="editUserForm.$invalid"
                     ng-click="editUser(data.user)"
                     class="btn btn-primary">Lagre</button>
@@ -23,3 +23,4 @@
     </form>
 
 </div>
+

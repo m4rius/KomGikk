@@ -1,4 +1,5 @@
-<div ng-controller="activitiesListCtrl">
+<h2>Aktiviteter</h2>
+<div class="well" ng-controller="activitiesListCtrl" >
     <table class="table table-striped table-bordered table-hover">
         <thead>
         <tr>
@@ -15,13 +16,13 @@
             <td>{{item.category}}</td>
             <td>
                 <a href="#/updateactivity" class="btn btn-xs btn-warning" ng-click="selectActivityForUpdate(item)">Endre</a>
-                <button type="button" class="btn btn-xs btn-danger" ng-click="deleteActivity(item)">Slette</button>
+                <button type="button" class="btn btn-xs btn-danger" ng-click="deleteActivity(item)" confirmation-needed="Vil du fjerne denne aktiviteten?">Slette</button>
             </td>
         </tr>
         </tbody>
     </table>
 
-    <div class="text-center">
+    <div>
         <a href="#/newactivity"class="btn btn-primary">Legg til aktivitet</a>
     </div>
 </div>
