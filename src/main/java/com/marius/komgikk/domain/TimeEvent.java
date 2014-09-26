@@ -1,10 +1,11 @@
 package com.marius.komgikk.domain;
 
 import com.google.appengine.api.datastore.*;
-import com.google.appengine.repackaged.com.google.common.base.Function;
-import com.google.appengine.repackaged.com.google.common.collect.Lists;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +15,8 @@ public class TimeEvent {
     public static final String kind = "TIME_EVENT";
 
     public enum TimeEventSpecialType {
-        START, END
+        START, END;
     }
-
     private Entity entity;
 
     /*
@@ -29,7 +29,7 @@ public class TimeEvent {
 
     private TimeEvent(KomGikkUser user, DateTime time, String activity, TimeEventSpecialType type) {
         this.entity = new Entity(kind, user.getKey());
-        setTime(time);
+        setDateTime(time);
 
         if (activity != null) {
             setActivity(activity);
@@ -53,8 +53,12 @@ public class TimeEvent {
     Getters and setters
      */
 
-    public void setTime(DateTime time) {
+    public void setDateTime(DateTime time) {
         entity.setProperty("dateTime", time.toDate());
+    }
+
+    public void setDateTime(String time) {
+        setDateTime(DateTime.parse(time, DateTimeFormat.forPattern("dd.MM.yyyy HH:mm")));
     }
 
     private void setTimeEventSpecialType(TimeEventSpecialType type) {
@@ -70,10 +74,18 @@ public class TimeEvent {
      * Datastore
      */
 
-    public void store() {
+    public TimeEvent store() {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         datastore.put(entity);
+        return this;
     }
+
+    public void delete() {
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        datastore.delete(entity.getKey());
+
+    }
+
 
     public static List<TimeEvent> all(KomGikkUser user, DateTime dateTime) {
 
@@ -98,6 +110,24 @@ public class TimeEvent {
         return result;
     }
 
+
+    public static TimeEvent fromKey(String key, KomGikkUser currentUser) {
+
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+        try {
+            Entity entity = datastore.get(KeyFactory.stringToKey(key));
+            if (entity.getParent().equals(currentUser.getKey())) {
+                return new TimeEvent(entity);
+            }
+        } catch (EntityNotFoundException e) {
+            //TODO returner noe mer fornuftig
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
     /*
      * Json
      */
@@ -108,8 +138,8 @@ public class TimeEvent {
 
         DateTime dateTime = new DateTime(entity.getProperty("dateTime"), DateTimeZone.forID("Europe/Oslo"));
 
-        jsonTimeEvent.time = dateTime.toString("HH:mm:ss");
-        jsonTimeEvent.date = dateTime.toString("yyyy.MM.dd");
+        jsonTimeEvent.time = dateTime.toString("HH:mm");
+        jsonTimeEvent.date = dateTime.toString("dd.MM.yyyy");
         jsonTimeEvent.activityKey = (String) entity.getProperty("activity");
         jsonTimeEvent.specialEvent = (String) entity.getProperty("specialEvent");
 
@@ -124,5 +154,11 @@ public class TimeEvent {
                 return i.forJson();
             }
         });
+    }
+
+    public TimeEvent update(JsonTimeEvent json) {
+        setActivity(json.activityKey);
+        setDateTime(json.date + " " + json.time);
+        return this;
     }
 }

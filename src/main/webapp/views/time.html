@@ -33,12 +33,41 @@
         </div>
     </div>
     <div class="col-md-6">
-        <table class="table table-bordered">
-            <tr ng-repeat="event in data.events.list | orderBy: 'time'">
-                <td>{{event.date}} {{event.time}}</td>
-                <td>{{event.specialEvent}}{{getActivityName(event.activityKey)}}</td>
+        <form editable-form name="tableform" onaftersave="saveTable()" oncancel="cancel()">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Tid</th>
+                    <th>Aktivitet</th>
+                    <th ng-show="tableform.$visible"><span >Action</span></th>
+                </tr>
+            </thead>
+            <tr ng-repeat="event in data.events.list | filter:filterEvent |orderBy: 'time'">
+                <td>
+                    <span editable-text="event.time" e-form="tableform" onbeforesave="checkTime($data, event)">
+                        {{ event.time || 'empty' }}
+                    </span>
+                </td>
+                <td>
+                    <span editable-select="event.activityKey" e-form="tableform" e-ng-options="a.key as a.name for a in data.activities">
+                        {{ showActivities(event) }}
+                    </span>
+                </td>
+                <td ng-show="tableform.$visible"><button type="button"  ng-click="deleteEvent(event)" class="btn btn-danger pull-right">Fjern</button></td>
             </tr>
         </table>
+        <!-- buttons -->
+        <div class="btn-edit">
+            <button type="button" class="btn btn-default" ng-show="!tableform.$visible" ng-click="tableform.$show()">
+                Endre
+            </button>
+            <div class="btn-form" ng-show="tableform.$visible">
+                <button type="button" ng-disabled="tableform.$waiting" ng-click="addEvent()" class="btn btn-default pull-right">Legg til</button>
+                <button type="submit" ng-disabled="tableform.$waiting" class="btn btn-primary">Lagre</button>
+                <button type="button" ng-disabled="tableform.$waiting" ng-click="tableform.$cancel()" class="btn btn-default">Avbryt</button>
+            </div>
+        </div>
+        </form>
     </div>
 
 </div>
