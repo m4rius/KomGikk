@@ -14,7 +14,7 @@ angular.module("komGikkApp")
 
         $scope.selectMenu = function (menuItem) {
             if (angular.isUndefined(menuItem)) {
-                selectedMenuItem = 1;
+                selectedMenuItem = 0;
             } else {
                 selectedMenuItem = menuItem.id;
             }
