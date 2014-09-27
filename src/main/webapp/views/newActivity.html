@@ -1,6 +1,6 @@
 <style>
-    input.ng-invalid { background-color: lightpink; }
-    span.error { color: red; font-weight: bold; }
+    input.ng-invalid { background-color: #e4b9b9; }
+    span.error { color: #a94442; font-weight: bold; }
 </style>
 
 <h2>Ny aktivitet</h2>
@@ -9,8 +9,8 @@
 <form name="newActivityForm" novalidate>
 
     <div class="form-group">
-        <label>Navn</label>
-        <input name="name" class="form-control" ng-model="data.newactivity.name" required />
+        <label for="name" class="control-label">Navn</label>
+        <input name="name" id="name" class="form-control" ng-model="data.newactivity.name" required />
         <span class="error" ng-show="newActivityForm.name.$error.required">Legg inn navn</span>
     </div>
     <div class="form-group">

@@ -13,7 +13,9 @@
                 <li ng-repeat="item in menu" ng-class="getMenuClass(item)"><a href="{{item.url}}" ng-click="selectMenu(item)">{{item.name}}</a></li>
             </ul>
             <div class="navbar-right">
-                <p class="navbar-text"><span class="glyphicon glyphicon-user"></span> <a href="#" editable-text="username" onchange="console.log('endrer brukernavn')" class="navbar-link">{{username || 'missing'}}</a></p>
+                <p class="navbar-text">
+                    <span class="glyphicon glyphicon-user" ng-class="userIconClass()"></span>
+                    <a href="#" editable-text="username" class="navbar-link">{{username || 'missing'}}</a></p>
                 <a class="btn btn-default navbar-btn" ng-click="doLogout()">Logg ut</a>
 
 

@@ -34,6 +34,13 @@ angular.module("komGikkApp")
             window.location = $scope.logoutUrl;
         };
 
+        $scope.userIconClass = function() {
+          if (!$scope.username ) {
+              return "text-danger";
+          }
+
+        };
+
         $scope.$watch('username', function() {
             if ($scope.username) {
                 console.log("Change: " + $scope.data.user.name + " - " + $scope.username);
