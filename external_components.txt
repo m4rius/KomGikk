@@ -1,0 +1,4 @@
+http://angular-ui.github.io/ui-utils/ - ikke tatt i bruke enda. Skal være mulig å styre keypress
+http://vitalets.github.io/x-editable/
+http://getbootstrap.com/
+https://angularjs.org/

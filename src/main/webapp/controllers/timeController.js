@@ -39,7 +39,7 @@ app.controller("timeCtrl", function($scope, $http, $filter, properties, activity
             return "btn-primary";
         }
         if ($scope.data.events.currentAction == activity.key) {
-            return "btn-warning"
+            return "btn-info"
         }
         return "btn-primary";
     };

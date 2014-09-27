@@ -2,8 +2,10 @@ angular.module("komGikkApp")
     .constant("menuActiveCLass", "active")
     .controller("menuCtrl", function($scope, $http, menuActiveCLass, properties) {
 
+
+
         $scope.menu = [
-            {id: 1, name: "Registrere tid", url: "#/time"},
+            {id: 1, name: "Registrere aktivitet", url: "#/time"},
             {id: 3, name: "Ukeliste", url: "#/summary"},
             {id: 4, name: "Innstillinger", url: "#/settings"}
         ];
@@ -30,6 +32,23 @@ angular.module("komGikkApp")
 
         $scope.doLogout = function() {
             window.location = $scope.logoutUrl;
-        }
+        };
+
+        $scope.$watch('username', function() {
+            if ($scope.username) {
+                console.log("Change: " + $scope.data.user.name + " - " + $scope.username);
+                if ($scope.username != $scope.data.user.name) {
+                    $scope.data.user.name = $scope.username;
+                    $http.post(properties.userUrl, $scope.data.user)
+                        .error(function(error) {
+                            $scope.data.error = error;
+                        })
+                }
+            } else {
+                console.log("Change men undefined")
+            }
+
+
+        });
 
     });

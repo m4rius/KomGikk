@@ -1,15 +1,27 @@
 Sortering av aktiviteter med drag&drop :https://github.com/angular-ui/ui-sortable
 
-Done- confirm på slette
-
-Done- Legg til aktivitet venstr justert
-
 GJøre brand til link til "om"
 
-Legge aktiviteter under profil
+DONE - Well på tids side må være like store når de legges under hverandre
 
-Done - Endre profil til innstillinger
+Hvite linjer i tabeller når de er inni wells
 
-Done: Ikke så store knapper
+wells -> jumbotron
 
+Inputfelt skal ikke være røde før man går ut
+
+Endre farger på valid/not valid input (grønn->hvit) event grønn hake når ferdig
+
+Fjerne linjer rundt tabell
+
+Bla på dato i timeside
+    - dato tilbake i tid viser ikke knapper
+
+DONE- Avbrytknapp når du ikke skal legge til aktivitet likevel
+
+DONE - Legg inn glyphicon user + navn, så kan du droppe "logget inn som"
+
+DONE - Endre til registrere aktivitet i meny
+
+DONE - Endreknapp legges i blå i stedet for grå
 

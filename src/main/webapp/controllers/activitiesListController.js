@@ -18,6 +18,12 @@ angular.module("komGikkApp")
 
         };
 
+        $scope.cancel = function() {
+            $scope.data.newactivity = null;
+            $location.path("/activities");
+
+        };
+
         $scope.updateActivity = function(updatedActivity) {
             $http.put(properties.activityUrl, updatedActivity)
                 .success(function(returnValue) {

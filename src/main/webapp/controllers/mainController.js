@@ -21,6 +21,7 @@ angular.module("komGikkApp")
         $http.get(properties.userUrl)
             .success(function (returnValue){
                 $scope.data.user = returnValue;
+                $scope.username = $scope.data.user.name;
             })
             .error(function (error) {
                 console.log("Feil ved henting av bruker: " + error);
