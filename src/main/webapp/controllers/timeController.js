@@ -9,6 +9,18 @@ app.controller("timeCtrl", function($scope, $http, $filter, properties, activity
             })
     }
 
+    function leftPad(s, pad) {
+        var str = "" + s
+        return pad.substring(0, pad.length - str.length) + str
+
+    }
+
+    $scope.verboseToday = function() {
+        var dager = ['Søndag', 'Mandag', 'Tirsdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lørdag'];
+        var d = new Date();
+        return dager[d.getDay()] + " " + leftPad(d.getDate(), '00') + "." + leftPad(d.getMonth(), '00');
+    };
+
     $scope.doStart = function() {
         postNewTimeEvent("{\"key\":\"" + $scope.data.activities.startDayActivity.key + "\"}");
     };
