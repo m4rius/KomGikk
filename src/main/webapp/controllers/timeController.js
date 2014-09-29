@@ -9,14 +9,6 @@ app.controller("timeCtrl", function($scope, $http, $filter, properties, activity
             })
     }
 
-    //$scope.acts = [
-    //    {key: 1, name: "Nilse"},
-    //    {key: 2, name: "test"}
-    //];
-
-    //TODO. WHYYYYY!
-    $scope.acts = $scope.data.activities.activityList;
-
     $scope.doStart = function() {
         postNewTimeEvent("{\"key\":\"" + $scope.data.activities.startDayActivity.key + "\"}");
     };
@@ -26,7 +18,6 @@ app.controller("timeCtrl", function($scope, $http, $filter, properties, activity
     };
 
     $scope.startActivity = function (activity) {
-        //post new save timeevent
         postNewTimeEvent("{\"key\":\"" + activity.key + "\"}");
     };
 
@@ -39,12 +30,8 @@ app.controller("timeCtrl", function($scope, $http, $filter, properties, activity
     };
 
     $scope.filterActivities = function(activity) {
-        if (activity.defaultType) {
-            return false;
-        }
-        return true;
-
-    }
+        return !activity.defaultType;
+    };
 
     $scope.showActivityButtons = function() {
         return $scope.data.events.isStarted && !$scope.data.events.isEnded;
@@ -67,7 +54,6 @@ app.controller("timeCtrl", function($scope, $http, $filter, properties, activity
 
         return activityService.findActivityByKey(activityKey, $scope.data).name;
     };
-
 
     $scope.filterEvent = function(event) {
         return event.isDeleted !== true;
