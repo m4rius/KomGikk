@@ -1,11 +1,13 @@
 package com.marius.komgikk.rest;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
-import com.marius.komgikk.domain.JsonTimeEvent;
-import com.marius.komgikk.domain.KomGikkUser;
-import com.marius.komgikk.domain.TimeEvent;
+import com.marius.komgikk.domain.*;
+import junit.framework.Assert;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.joda.time.DateTime;
@@ -48,10 +50,23 @@ public class TimeEventApiTest extends JerseyTest {
 
     @Test
     public void testStore() throws IOException {
-        storeDefaultUser();
+        KomGikkUser komGikkUser = prepareAndStoreDefaultUser();
+
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        Query q = new Query(Activity.kind).setAncestor(komGikkUser.getKey());
+
+        Activity startDay = null;
+        for (com.google.appengine.api.datastore.Entity entity : ds.prepare(q).asIterable()) {
+            Activity activity = Activity.from(entity, komGikkUser);
+            if (activity.getDefaultType() != null && activity.getDefaultType() == Activity.DefaultActivities.START) {
+                startDay = activity;
+            }
+        }
+
+        Assert.assertNotNull(startDay);
 
         JsonTimeEvent post = new JsonTimeEvent();
-        post.specialEvent = TimeEvent.TimeEventSpecialType.START.name();
+        post.activity = startDay.forJson();
 
         Response response = target("timeevent").request().post(Entity.json(new Gson().toJson(post)));
 
@@ -59,7 +74,8 @@ public class TimeEventApiTest extends JerseyTest {
 
         String result = readResponse(response);
 
-        assertTrue(result.contains("\"specialEvent\":\"START\""));
+        //TODO: Dårlig sammenligning
+        assertTrue(result.contains("activity"));
         assertTrue(result.contains("key"));
         assertTrue(result.contains("time"));
         assertTrue(result.contains("date"));
@@ -67,20 +83,20 @@ public class TimeEventApiTest extends JerseyTest {
 
     @Test
     public void testList() throws IOException {
-        KomGikkUser user = storeDefaultUser();
+        KomGikkUser user = prepareAndStoreDefaultUser();
+        List<Activity> activities = Activity.allCurrent(user);
 
         DateTime now = DateTime.now();
 
-
         //gårsdagens, skal ikke hentes i list
-        new TimeEvent(user, now.minusDays(1).minusHours(2), TimeEvent.TimeEventSpecialType.START).store();
-        new TimeEvent(user, now.minusDays(1).minusHours(1), "activityKey").store();
-        new TimeEvent(user, now.minusDays(1), TimeEvent.TimeEventSpecialType.END).store();
+        new TimeEvent(user, now.minusDays(1).minusHours(2), activities.get(0)).store();
+        new TimeEvent(user, now.minusDays(1).minusHours(1), activities.get(1)).store();
+        new TimeEvent(user, now.minusDays(1), activities.get(1)).store();
 
 
-        new TimeEvent(user, now.minusHours(2), TimeEvent.TimeEventSpecialType.START).store();
-        new TimeEvent(user, now.minusHours(1), "activityKey").store();
-        new TimeEvent(user, now, TimeEvent.TimeEventSpecialType.END).store();
+        new TimeEvent(user, now.minusHours(2), activities.get(0)).store();
+        new TimeEvent(user, now.minusHours(1), activities.get(1)).store();
+        new TimeEvent(user, now, activities.get(1)).store();
 
         Response response = target("timeevent/list").request().get();
 
@@ -88,19 +104,24 @@ public class TimeEventApiTest extends JerseyTest {
 
         List<JsonTimeEvent> events = new Gson().fromJson(result, new TypeToken<List<JsonTimeEvent>>() {}.getType());
 
+        assert events != null;
         assertEquals(3, events.size());
     }
 
     @Test
     public void testUpdateAllUpdateAndDelete() throws IOException {
-        KomGikkUser user = storeDefaultUser();
+        KomGikkUser user = prepareAndStoreDefaultUser();
+        List<Activity> activities = Activity.allCurrent(user);
 
         DateTime now = DateTime.now();
-        JsonTimeEvent json1 = new TimeEvent(user, now.minusHours(2), TimeEvent.TimeEventSpecialType.START).store().forJson();
-        JsonTimeEvent json2 = new TimeEvent(user, now.minusHours(1), "activityKey").store().forJson();
-        JsonTimeEvent json3 = new TimeEvent(user, now, TimeEvent.TimeEventSpecialType.END).store().forJson();
+        JsonTimeEvent json1 = new TimeEvent(user, now.minusHours(2), activities.get(0)).store().forJson();
+        JsonTimeEvent json2 = new TimeEvent(user, now.minusHours(1), activities.get(1)).store().forJson();
+        JsonTimeEvent json3 = new TimeEvent(user, now, activities.get(1)).store().forJson();
 
-        json2.activityKey = "newActivityKey";
+        JsonActivity jsonActivity = new JsonActivity();
+        jsonActivity.key = activities.get(2).getKeyString();
+
+        json2.activity = jsonActivity;
         json3.isDeleted = true;
 
         List<JsonTimeEvent> put = new ArrayList<>();
@@ -116,7 +137,7 @@ public class TimeEventApiTest extends JerseyTest {
 
         boolean foundNewActivity = false;
         for (JsonTimeEvent event : events) {
-            if (event.activityKey != null && event.activityKey.equals(json2.activityKey)) {
+            if (event.activity.key.equals(json2.activity.key)) {
                 foundNewActivity = true;
             }
         }
@@ -126,15 +147,17 @@ public class TimeEventApiTest extends JerseyTest {
 
     @Test
     public void testUpdateAllNew() throws IOException {
-        KomGikkUser user = storeDefaultUser();
+        KomGikkUser user = prepareAndStoreDefaultUser();
+        List<Activity> activities = Activity.allCurrent(user);
 
         DateTime now = DateTime.now();
-        JsonTimeEvent json1 = new TimeEvent(user, now.minusHours(2), TimeEvent.TimeEventSpecialType.START).store().forJson();
-        JsonTimeEvent json2 = new TimeEvent(user, now.minusHours(1), "activityKey").store().forJson();
+        JsonTimeEvent json1 = new TimeEvent(user, now.minusHours(2), activities.get(0)).store().forJson();
+        JsonTimeEvent json2 = new TimeEvent(user, now.minusHours(1), activities.get(1)).store().forJson();
 
-
+        JsonActivity jsonActivity = new JsonActivity();
+        jsonActivity.key = activities.get(2).getKeyString();
         JsonTimeEvent newEvent = new JsonTimeEvent();
-        newEvent.activityKey = "enAktvitet";
+        newEvent.activity = jsonActivity;
         newEvent.time = "12:00";
         newEvent.date = "12.12.2000";
         newEvent.isNew = true;

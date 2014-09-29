@@ -5,6 +5,7 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.marius.komgikk.domain.Activity;
 import com.marius.komgikk.domain.KomGikkUser;
 
 import java.util.HashMap;
@@ -27,9 +28,10 @@ public class DataStoreTestUtil {
 
     }
 
-    public static KomGikkUser storeDefaultUser() {
+    public static KomGikkUser prepareAndStoreDefaultUser() {
         KomGikkUser user = new KomGikkUser("10", "test@test.no");
         user.store();
+        Activity.storeDefaults(user);
         return user;
     }
 

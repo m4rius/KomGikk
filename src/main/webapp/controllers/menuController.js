@@ -43,7 +43,6 @@ angular.module("komGikkApp")
 
         $scope.$watch('username', function() {
             if ($scope.username) {
-                console.log("Change: " + $scope.data.user.name + " - " + $scope.username);
                 if ($scope.username != $scope.data.user.name) {
                     $scope.data.user.name = $scope.username;
                     $http.post(properties.userUrl, $scope.data.user)
@@ -51,11 +50,7 @@ angular.module("komGikkApp")
                             $scope.data.error = error;
                         })
                 }
-            } else {
-                console.log("Change men undefined")
             }
-
-
         });
 
     });

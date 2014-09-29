@@ -1,7 +1,9 @@
 package com.marius.komgikk.rest;
 
+import com.google.common.base.Preconditions;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.marius.komgikk.domain.JsonKeyInput;
 import com.marius.komgikk.domain.JsonTimeEvent;
 import com.marius.komgikk.domain.KomGikkUser;
 import com.marius.komgikk.domain.TimeEvent;
@@ -13,11 +15,14 @@ import org.joda.time.format.DateTimeFormat;
 import javax.ws.rs.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Path("/timeevent")
 public class TimeEventApi {
+
+    private static final Logger LOG = Logger.getLogger(TimeEvent.class.getName());
 
     private UserService userService = new UserService();
 
@@ -43,13 +48,13 @@ public class TimeEventApi {
         for (JsonTimeEvent event : events) {
             if (event.isNew) {
                 DateTime dateTime = DateTime.parse(event.date + " " + event.time, DateTimeFormat.forPattern("dd.MM.yyyy HH:mm"));
-                TimeEvent newEvent = new TimeEvent(currentUser, dateTime, event.activityKey).store();
+                TimeEvent newEvent = new TimeEvent(currentUser, dateTime, event.activity.key).store();
                 returnValue.add(newEvent.forJson());
             } else if (event.isDeleted) {
                 TimeEvent.fromKey(event.key, currentUser).delete();
             } else {
                 TimeEvent timeEvent = TimeEvent.fromKey(event.key, currentUser);
-                timeEvent.update(event).store();
+                timeEvent.updateFromJson(event).store();
                 returnValue.add(timeEvent.forJson());
             }
         }
@@ -63,23 +68,17 @@ public class TimeEventApi {
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
     public String storeNew(String json) {
-        JsonTimeEvent jsonTimeEvent = new Gson().fromJson(json, JsonTimeEvent.class);
+        JsonKeyInput jsonKeyInput = new Gson().fromJson(json, JsonKeyInput.class);
+
+        Preconditions.checkNotNull(jsonKeyInput.key);
+
         KomGikkUser currentUser = userService.getCurrentUser();
 
         DateTimeZone dateTimeZone = DateTimeZone.forID("Europe/Oslo");
 
-        TimeEvent timeEvent;
-        if (jsonTimeEvent.specialEvent != null) {
-            timeEvent = new TimeEvent(
-                    currentUser,
-                    DateTime.now(dateTimeZone),
-                    TimeEvent.TimeEventSpecialType.valueOf(jsonTimeEvent.specialEvent));
-        } else {
-            timeEvent = new TimeEvent(currentUser, DateTime.now(dateTimeZone), jsonTimeEvent.activityKey);
-        }
-
+        TimeEvent timeEvent = new TimeEvent(currentUser, DateTime.now(dateTimeZone), jsonKeyInput.key);
         timeEvent.store();
-
+        LOG.info(String.format("Stored new time event with action key: %s", jsonKeyInput.key ));
 
         return new Gson().toJson(timeEvent.forJson());
     }

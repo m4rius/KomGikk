@@ -6,12 +6,7 @@ angular.module("komGikkApp")
 
         $http.get(properties.activitiesUrl)
             .success(function(returnValue) {
-                var index;
-                if (angular.isArray(returnValue)) {
-                    for (index = 0; index < returnValue.length; ++index) {
-                        activityService.addActivity($scope.data, returnValue[index]);
-                    }
-                }
+                activityService.addAllActivities($scope.data, returnValue);
             })
             .error(function(error) {
                 console.log("Feil ved henting av aktiviteter: " + error);

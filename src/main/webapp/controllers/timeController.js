@@ -9,17 +9,25 @@ app.controller("timeCtrl", function($scope, $http, $filter, properties, activity
             })
     }
 
+    //$scope.acts = [
+    //    {key: 1, name: "Nilse"},
+    //    {key: 2, name: "test"}
+    //];
+
+    //TODO. WHYYYYY!
+    $scope.acts = $scope.data.activities.activityList;
+
     $scope.doStart = function() {
-        postNewTimeEvent("{\"specialEvent\":\"START\"}");
+        postNewTimeEvent("{\"key\":\"" + $scope.data.activities.startDayActivity.key + "\"}");
     };
 
     $scope.doEnd = function() {
-        postNewTimeEvent("{\"specialEvent\":\"END\"}");
+        postNewTimeEvent("{\"key\":\"" + $scope.data.activities.endDayActivity.key + "\"}");
     };
 
     $scope.startActivity = function (activity) {
         //post new save timeevent
-        postNewTimeEvent("{\"activityKey\":\"" + activity.key + "\"}");
+        postNewTimeEvent("{\"key\":\"" + activity.key + "\"}");
     };
 
     $scope.showStart = function() {
@@ -30,6 +38,14 @@ app.controller("timeCtrl", function($scope, $http, $filter, properties, activity
         return $scope.data.events.isStarted && !$scope.data.events.isEnded;
     };
 
+    $scope.filterActivities = function(activity) {
+        if (activity.defaultType) {
+            return false;
+        }
+        return true;
+
+    }
+
     $scope.showActivityButtons = function() {
         return $scope.data.events.isStarted && !$scope.data.events.isEnded;
     };
@@ -38,7 +54,7 @@ app.controller("timeCtrl", function($scope, $http, $filter, properties, activity
         if ($scope.data.events.currentAction == null) {
             return "btn-primary";
         }
-        if ($scope.data.events.currentAction == activity.key) {
+        if ($scope.data.events.currentAction.key == activity.key) {
             return "btn-info"
         }
         return "btn-primary";
@@ -58,9 +74,6 @@ app.controller("timeCtrl", function($scope, $http, $filter, properties, activity
     };
 
     $scope.showActivities = function(event) {
-        if (event.specialEvent) {
-            return event.specialEvent;
-        }
         if(event.activityKey) {
             return activityService.findActivityByKey(event.activityKey, $scope.data).name;
         }
@@ -83,8 +96,10 @@ app.controller("timeCtrl", function($scope, $http, $filter, properties, activity
         var date = new Date();
         $scope.data.events.list.push({
             time: date.getHours() + ":" + date.getMinutes(),
-            date: date.getFullYear() + "." + date.getMonth() + "." + date.getDay(),
-            specialEvent: null,
+            date: date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(),
+            activity: {
+                key: null
+            },
             isNew: true
         });
     };

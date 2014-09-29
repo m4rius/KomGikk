@@ -1,16 +1,22 @@
 package com.marius.komgikk.domain;
 
 import com.google.appengine.api.datastore.*;
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
-public class Activity {
+public class Activity extends  DataStoreDependentDomain {
+
+    private static final Logger LOG = Logger.getLogger(Activity.class.getName());
 
     public static final String kind = "ACTIVITY";
 
     private Entity entity;
+
 
     /*
     Constructors
@@ -18,19 +24,25 @@ public class Activity {
 
     private Activity(KomGikkUser user) {
         this.entity = new Entity(kind, user.getKey());
+        setState(ActivityState.CURRENT);
+        entity.setProperty("user", user.getUsername());
     }
 
     public Activity(KomGikkUser user, String name, String sap, String category) {
         this(user);
-        entity.setProperty("user", user.getUsername());
         setName(name);
         setSap(sap);
         setCategory(category);
-        setState(ActivityState.CURRENT);
 
     }
 
-    private static Activity from(Entity entity, KomGikkUser user) {
+    private static Activity defaultActivity(KomGikkUser user, DefaultActivities type) {
+        Activity activity = new Activity(user);
+        setDefaultType(type, activity);
+        return activity;
+    }
+
+    public static Activity from(Entity entity, KomGikkUser user) {
         Activity activity = new Activity(user);
         activity.entity = entity;
         return activity;
@@ -68,8 +80,21 @@ public class Activity {
         entity.setProperty("state", activityState.name());
     }
 
+    public ActivityState getState() {
+        return ActivityState.valueOf((String) entity.getProperty("state"));
+    }
+
     public String getKeyString() {
         return KeyFactory.keyToString(entity.getKey());
+    }
+
+    private static void setDefaultType(DefaultActivities type, Activity activity) {
+        activity.entity.setProperty("defaultType", type.name());
+    }
+
+    public DefaultActivities getDefaultType() {
+        String defaultType = (String) entity.getProperty("defaultType");
+        return defaultType != null ? DefaultActivities.valueOf(defaultType) : null;
     }
 
     /*
@@ -77,8 +102,7 @@ public class Activity {
      */
 
     public Activity store() {
-        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        datastore.put(entity);
+        getDataStore().put(entity);
         return this;
     }
 
@@ -87,7 +111,7 @@ public class Activity {
         store();
     }
 
-    public static List<JsonActivity> getForJson(KomGikkUser user) {
+    public static List<Activity> allCurrent(KomGikkUser user) {
         Query.Filter stateFilter = new Query.FilterPredicate("state", Query.FilterOperator.EQUAL, ActivityState.CURRENT.name());
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -98,12 +122,13 @@ public class Activity {
 
         PreparedQuery pq = datastore.prepare(q);
 
-        List<JsonActivity> result = new ArrayList<>();
+        List<Activity> result = new ArrayList<>();
         for (Entity entity : pq.asIterable()) {
-            result.add(Activity.from(entity, user).forJson());
+            result.add(Activity.from(entity, user));
         }
 
         return result;
+
     }
 
     public static Activity findStored(JsonActivity jsonActivity, KomGikkUser user) {
@@ -116,6 +141,7 @@ public class Activity {
         }
     }
 
+
     public static Activity getByKey(String key, KomGikkUser user) {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         try {
@@ -124,6 +150,17 @@ public class Activity {
         } catch (EntityNotFoundException e) {
             return null;
         }
+    }
+
+    public static void storeDefaults(KomGikkUser user) {
+        LOG.info(String.format("Storing default actions for user %s", user.getUsername()));
+
+        Activity.defaultActivity(user, DefaultActivities.START).store();
+        Activity.defaultActivity(user, DefaultActivities.END).store();
+
+        Activity.defaultActivity(user, DefaultActivities.START_EXTRA).store();
+        Activity.defaultActivity(user, DefaultActivities.END_EXTRA).store();
+
     }
 
     public static Activity update(JsonActivity jsonActivity, KomGikkUser currentUser) {
@@ -144,14 +181,30 @@ public class Activity {
     public JsonActivity forJson() {
         JsonActivity activity = new JsonActivity();
         activity.key = KeyFactory.keyToString(entity.getKey());
-        activity.name = getName();
-        activity.category = getCategory();
-        activity.sap = getSap();
+        activity.defaultType = getDefaultType() != null ? getDefaultType().name() : null;
+        if (activity.defaultType == null) {
+            activity.name = getName();
+            activity.category = getCategory();
+            activity.sap = getSap();
+        }
+
         return activity;
     }
 
+    public static List<JsonActivity> getForJson(KomGikkUser user) {
+        List<Activity> timeEvents = allCurrent(user);
 
+        return Lists.transform(timeEvents, new Function<Activity, JsonActivity>() {
+            public JsonActivity apply(Activity i) {
+                return i.forJson();
+            }
+        });
+    }
     public enum ActivityState {
-        CURRENT, HISTORIC
+        CURRENT, HISTORIC;
+    }
+
+    public enum DefaultActivities {
+        START, END, START_EXTRA, END_EXTRA
     }
 }

@@ -18,8 +18,14 @@ angular.module("komGikkApp")
 
         };
 
-        $scope.cancel = function() {
+        $scope.cancelNewActivity = function() {
             $scope.data.newactivity = null;
+            $location.path("/activities");
+
+        };
+
+        $scope.cancelUpdateActivity = function() {
+            $scope.data.activityToUpdate = null;
             $location.path("/activities");
 
         };
@@ -50,7 +56,19 @@ angular.module("komGikkApp")
         };
 
         $scope.selectActivityForUpdate = function(activity) {
-            $scope.data.activityToUpdate = activity;
+            //TODO finn en bedre måte å kopiere på
+            $scope.data.activityToUpdate = {
+                key: activity.key,
+                name: activity.name,
+                sap: activity.sap
+            };
+        };
+
+        $scope.filterActionsForEdit = function(activity) {
+            if (angular.isUndefined(activity.defaultType) || activity.defaultType == null) {
+                return true;
+            }
+            return false;
         }
 
 

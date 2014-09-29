@@ -25,3 +25,11 @@ DONE - Endre til registrere aktivitet i meny
 
 DONE - Endreknapp legges i blå i stedet for grå
 
+
+TEKNISK
+
+Ta i bruk memcache for å redusere antall les/skriv til datastore
+
+Noe må gjøres rundt opprettelse av ny bruker. Det blir trådproblemer.
+Kanskje det bør være et første kall fra web som sjekker bruker, eventuelt oppretter, før resten av kallene blir gjort
+

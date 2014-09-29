@@ -8,6 +8,8 @@ public class KomGikkUser {
 
     private Entity entity;
 
+    public transient boolean createdNow = false;
+
     public KomGikkUser(String username) {
         entity = new Entity(kind, username);
     }

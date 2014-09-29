@@ -24,10 +24,12 @@
         <input name="category" class="form-control" ng-model="data.activityToUpdate.category" />
     </div>
 
-    <div class="text-center">
+    <div>
         <button ng-disabled="updateActivityForm.$invalid"
                 ng-click="updateActivity(data.activityToUpdate)"
                 class="btn btn-primary">Lagre</button>
+        <button ng-click="cancelUpdateActivity()"
+                class="btn btn-default">Avbryt</button>
     </div>
 
 

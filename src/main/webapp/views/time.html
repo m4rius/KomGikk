@@ -9,7 +9,7 @@
 
 
             <div class="text-center"  ng-show="showActivityButtons()">
-                <div ng-repeat="activity in data.activities | orderBy: 'category' | orderBy: 'name'">
+                <div ng-repeat="activity in data.activities.activityList | filter:filterActivities | orderBy: 'name'">
                     <div class="btn-group btn-group-justified" style="padding-bottom: 7px">
                         <a class="btn"
                            href="#"
@@ -47,8 +47,8 @@
                         </span>
                     </td>
                     <td>
-                        <span editable-select="event.activityKey" e-form="tableform" e-ng-options="a.key as a.name for a in data.activities">
-                            {{ showActivities(event) }}
+                        <span editable-select="event.activity.key" e-form="tableform" e-ng-options="a.key as a.name for a in acts">
+                            {{ event.activity.name }}
                         </span>
                     </td>
                     <td ng-show="tableform.$visible"><button type="button"  ng-click="deleteEvent(event)" class="btn btn-danger pull-right">Fjern</button></td>

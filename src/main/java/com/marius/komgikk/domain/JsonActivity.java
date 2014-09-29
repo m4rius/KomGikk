@@ -5,5 +5,8 @@ public class JsonActivity {
     public String name;
     public String sap;
     public String category;
+    public String defaultType;
+
+    //in
     public String action;
 }

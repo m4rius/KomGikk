@@ -1,0 +1,56 @@
+{
+  "events": {
+    "isStarted": false,
+    "isEnded": false,
+    "list": []
+  },
+  "user": {
+    "username": "18580476422013912411",
+    "email": "test@example.com",
+    "name": "Marius"
+  },
+  "activities": {
+    "startDayActivity": {
+      "key": "agdrb21naWtrcjMLEgRVU0VSIhQxODU4MDQ3NjQyMjAxMzkxMjQxMQwLEghBQ1RJVklUWRiAgICAgICACgw",
+      "defaultType": "START"
+    },
+    "endDayActivity": {
+      "key": "agdrb21naWtrcjMLEgRVU0VSIhQxODU4MDQ3NjQyMjAxMzkxMjQxMQwLEghBQ1RJVklUWRiAgICAgICACQw",
+      "defaultType": "END"
+    },
+    "activityList": [
+      {
+        "key": "agdrb21naWtrcjMLEgRVU0VSIhQxODU4MDQ3NjQyMjAxMzkxMjQxMQwLEghBQ1RJVklUWRiAgICAgIDACQw",
+        "name": "Pule",
+        "sap": "222"
+      },
+      {
+        "key": "agdrb21naWtrcjMLEgRVU0VSIhQxODU4MDQ3NjQyMjAxMzkxMjQxMQwLEghBQ1RJVklUWRiAgICAgIDACgw",
+        "name": "Lage mat",
+        "sap": "111"
+      },
+      {
+        "key": "agdrb21naWtrcjMLEgRVU0VSIhQxODU4MDQ3NjQyMjAxMzkxMjQxMQwLEghBQ1RJVklUWRiAgICAgIDACww",
+        "name": "Jobbe",
+        "sap": "444"
+      }
+    ],
+    "activitiesByKey": {
+      "agdrb21naWtrcjMLEgRVU0VSIhQxODU4MDQ3NjQyMjAxMzkxMjQxMQwLEghBQ1RJVklUWRiAgICAgIDACQw": {
+        "key": "agdrb21naWtrcjMLEgRVU0VSIhQxODU4MDQ3NjQyMjAxMzkxMjQxMQwLEghBQ1RJVklUWRiAgICAgIDACQw",
+        "name": "Pule",
+        "sap": "222"
+      },
+      "agdrb21naWtrcjMLEgRVU0VSIhQxODU4MDQ3NjQyMjAxMzkxMjQxMQwLEghBQ1RJVklUWRiAgICAgIDACgw": {
+        "key": "agdrb21naWtrcjMLEgRVU0VSIhQxODU4MDQ3NjQyMjAxMzkxMjQxMQwLEghBQ1RJVklUWRiAgICAgIDACgw",
+        "name": "Lage mat",
+        "sap": "111"
+      },
+      "agdrb21naWtrcjMLEgRVU0VSIhQxODU4MDQ3NjQyMjAxMzkxMjQxMQwLEghBQ1RJVklUWRiAgICAgIDACww": {
+        "key": "agdrb21naWtrcjMLEgRVU0VSIhQxODU4MDQ3NjQyMjAxMzkxMjQxMQwLEghBQ1RJVklUWRiAgICAgIDACww",
+        "name": "Jobbe",
+        "sap": "444"
+      }
+    }
+  }
+}

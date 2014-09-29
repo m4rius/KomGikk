@@ -1,8 +1,5 @@
 package com.marius.komgikk.rest;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.gson.Gson;
 import com.marius.komgikk.domain.Activity;
@@ -19,7 +16,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
 
 import static com.marius.komgikk.rest.DataStoreTestUtil.assertNumberOfEntitiesStored;
-import static com.marius.komgikk.rest.DataStoreTestUtil.storeDefaultUser;
+import static com.marius.komgikk.rest.DataStoreTestUtil.prepareAndStoreDefaultUser;
 import static org.junit.Assert.assertEquals;
 
 public class ActivityApiTest extends JerseyTest {
@@ -58,7 +55,7 @@ public class ActivityApiTest extends JerseyTest {
 
     @Test
     public void testStore() {
-        storeDefaultUser();
+        prepareAndStoreDefaultUser();
 
         JsonActivity post = new JsonActivity();
         post.name = "aktivitet";
@@ -66,12 +63,13 @@ public class ActivityApiTest extends JerseyTest {
 
         target("activity").request().post(Entity.json(new Gson().toJson(post)));
 
-        assertNumberOfEntitiesStored(Activity.kind, 1);
+        //5 = 4 default + 1 new
+        assertNumberOfEntitiesStored(Activity.kind, 5);
     }
 
     @Test
     public void testDelete() {
-        KomGikkUser user = storeDefaultUser();
+        KomGikkUser user = prepareAndStoreDefaultUser();
 
         Activity activity = new Activity(user, "aktivitet", "sap", "c2");
         activity.store();
@@ -84,10 +82,9 @@ public class ActivityApiTest extends JerseyTest {
 
         target("activity").request().post(Entity.json(new Gson().toJson(post)));
 
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        String state = (String) ds.prepare(new Query(Activity.kind)).asSingleEntity().getProperty("state");
+        Activity stored = Activity.getByKey(post.key, user);
 
-        assertEquals(Activity.ActivityState.HISTORIC.name(), state);
+        assertEquals(Activity.ActivityState.HISTORIC, stored.getState());
 
     }
 }

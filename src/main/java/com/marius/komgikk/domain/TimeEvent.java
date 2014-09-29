@@ -3,6 +3,7 @@ package com.marius.komgikk.domain;
 import com.google.appengine.api.datastore.*;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.marius.komgikk.service.UserService;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -10,14 +11,15 @@ import org.joda.time.format.DateTimeFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TimeEvent {
+public class TimeEvent extends DataStoreDependentDomain {
 
     public static final String kind = "TIME_EVENT";
 
-    public enum TimeEventSpecialType {
-        START, END;
-    }
     private Entity entity;
+
+    //bare for å slippe å hente dem flere ganger.
+    private transient Activity activity;
+    private transient KomGikkUser user;
 
     /*
     Constructors
@@ -27,26 +29,16 @@ public class TimeEvent {
         this.entity = entity;
     }
 
-    private TimeEvent(KomGikkUser user, DateTime time, String activity, TimeEventSpecialType type) {
+    public TimeEvent(KomGikkUser user, DateTime time, String activity) {
         this.entity = new Entity(kind, user.getKey());
         setDateTime(time);
-
-        if (activity != null) {
-            setActivity(activity);
-        }
-
-        if (type != null) {
-            setTimeEventSpecialType(type);
-        }
+        setActivityKey(activity);
+        setUser(user);
     }
 
-    public TimeEvent(KomGikkUser user, DateTime time, String activity) {
-        this(user, time, activity, null);
-    }
-
-    public TimeEvent(KomGikkUser user, DateTime time, TimeEventSpecialType type) {
-        this(user, time, null, type);
-
+    public TimeEvent(KomGikkUser user, DateTime time, Activity activity) {
+        this(user, time, activity.getKeyString());
+        this.activity = activity;
     }
 
     /*
@@ -61,13 +53,31 @@ public class TimeEvent {
         setDateTime(DateTime.parse(time, DateTimeFormat.forPattern("dd.MM.yyyy HH:mm")));
     }
 
-    private void setTimeEventSpecialType(TimeEventSpecialType type) {
-        entity.setProperty("specialEvent", type.name());
-
+    private void setActivityKey(String activity) {
+        entity.setProperty("activityKey", activity);
     }
 
-    private void setActivity(String activity) {
-        entity.setProperty("activity", activity);
+
+    private String getActivityKey() {
+        return (String) entity.getProperty("activityKey");
+    }
+
+    private void setUser(KomGikkUser user) {
+        this.user = user;
+    }
+
+    private KomGikkUser getUser() {
+        if (user == null) {
+            user = new UserService().getCurrentUser();
+        }
+        return user;
+    }
+
+    private Activity getActivity() {
+        if (activity == null) {
+            activity = Activity.getByKey(getActivityKey(), getUser());
+        }
+        return activity;
     }
 
     /*
@@ -75,15 +85,12 @@ public class TimeEvent {
      */
 
     public TimeEvent store() {
-        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        datastore.put(entity);
+        getDataStore().put(entity);
         return this;
     }
 
     public void delete() {
-        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        datastore.delete(entity.getKey());
-
+        getDataStore().delete(entity.getKey());
     }
 
 
@@ -140,8 +147,8 @@ public class TimeEvent {
 
         jsonTimeEvent.time = dateTime.toString("HH:mm");
         jsonTimeEvent.date = dateTime.toString("dd.MM.yyyy");
-        jsonTimeEvent.activityKey = (String) entity.getProperty("activity");
-        jsonTimeEvent.specialEvent = (String) entity.getProperty("specialEvent");
+
+        jsonTimeEvent.activity = getActivity().forJson();
 
         return jsonTimeEvent;
     }
@@ -156,8 +163,8 @@ public class TimeEvent {
         });
     }
 
-    public TimeEvent update(JsonTimeEvent json) {
-        setActivity(json.activityKey);
+    public TimeEvent updateFromJson(JsonTimeEvent json) {
+        setActivityKey(json.activity.key);
         setDateTime(json.date + " " + json.time);
         return this;
     }

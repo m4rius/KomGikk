@@ -1,6 +1,7 @@
 package com.marius.komgikk.rest;
 
 import com.google.gson.Gson;
+import com.marius.komgikk.domain.Activity;
 import com.marius.komgikk.domain.JsonKomGikkUser;
 import com.marius.komgikk.domain.KomGikkUser;
 import com.marius.komgikk.service.UserService;
@@ -16,7 +17,11 @@ public class UserApi {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String getCurrentUser() {
-        return new Gson().toJson(userService.getCurrentUser().forJson());
+        KomGikkUser currentUser = userService.getCurrentUser();
+        if (currentUser.createdNow) {
+            Activity.storeDefaults(currentUser);
+        }
+        return new Gson().toJson(currentUser.forJson());
     }
 
     @POST
