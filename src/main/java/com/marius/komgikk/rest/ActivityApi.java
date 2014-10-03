@@ -3,7 +3,7 @@ package com.marius.komgikk.rest;
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.marius.komgikk.domain.Activity;
-import com.marius.komgikk.domain.JsonActivity;
+import com.marius.komgikk.domain.json.JsonActivity;
 import com.marius.komgikk.service.UserService;
 
 import javax.ws.rs.*;

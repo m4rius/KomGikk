@@ -1,4 +1,4 @@
-package com.marius.komgikk.domain;
+package com.marius.komgikk.domain.json;
 
 public class JsonTimeEvent {
     public String key;

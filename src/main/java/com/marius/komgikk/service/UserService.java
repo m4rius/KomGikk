@@ -35,6 +35,7 @@ public class UserService {
             user.createdNow = true;
             user.store();
         }
+
         return user;
     }
 }

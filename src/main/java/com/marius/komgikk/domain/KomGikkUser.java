@@ -2,6 +2,7 @@ package com.marius.komgikk.domain;
 
 import com.google.appengine.api.datastore.*;
 import com.google.common.base.Preconditions;
+import com.marius.komgikk.domain.json.JsonKomGikkUser;
 
 public class KomGikkUser {
     public static final String kind = "USER";

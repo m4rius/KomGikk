@@ -1,4 +1,4 @@
-package com.marius.komgikk.domain;
+package com.marius.komgikk.domain.json;
 
 /**
  * Created by marius on 19.09.14.

@@ -4,9 +4,12 @@ import com.google.appengine.api.datastore.*;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.marius.komgikk.domain.json.JsonActivity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class Activity extends  DataStoreDependentDomain {
@@ -131,6 +134,19 @@ public class Activity extends  DataStoreDependentDomain {
 
     }
 
+    public static Map<String, Activity> getAllActivitiesByKey(KomGikkUser user) {
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+        Query q = new Query(Activity.kind).setAncestor(user.getKey());
+        Map<String, Activity> result = new HashMap<>();
+        for (Entity entity : datastore.prepare(q).asIterable()) {
+            Activity a = Activity.from(entity, user);
+            result.put(a.getKeyString(), a);
+        }
+
+        return result;
+    }
+
     public static Activity findStored(JsonActivity jsonActivity, KomGikkUser user) {
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         try {
@@ -206,5 +222,10 @@ public class Activity extends  DataStoreDependentDomain {
 
     public enum DefaultActivities {
         START, END, START_EXTRA, END_EXTRA
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Activity: %s", getName());
     }
 }

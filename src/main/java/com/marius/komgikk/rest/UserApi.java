@@ -2,7 +2,7 @@ package com.marius.komgikk.rest;
 
 import com.google.gson.Gson;
 import com.marius.komgikk.domain.Activity;
-import com.marius.komgikk.domain.JsonKomGikkUser;
+import com.marius.komgikk.domain.json.JsonKomGikkUser;
 import com.marius.komgikk.domain.KomGikkUser;
 import com.marius.komgikk.service.UserService;
 
