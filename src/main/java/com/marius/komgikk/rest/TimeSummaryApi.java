@@ -52,7 +52,7 @@ public class TimeSummaryApi {
         StopClock stopClock = new StopClock().start();
 
         if (year == 0 || week == 0) {
-            DateTime now = DateTime.now();
+            DateTime now = DateUtil.now();
             year = now.getYear();
             week = now.getWeekOfWeekyear();
         }
@@ -67,7 +67,7 @@ public class TimeSummaryApi {
         Map<LocalDate, List<TimeEvent>> timeEvents = TimeEvent.allBetween(currentUser, startDate, endDate);
 
         JsonTimeSummary timeSummary = mashUp(timeEvents, activitiesByKey, startDate);
-        timeSummary.todayWeek = DateTime.now().getWeekOfWeekyear();
+        timeSummary.todayWeek = DateUtil.now().getWeekOfWeekyear();
 
         stopClock.stop();
         log.info(String.format("Done creating summary for week %s. Time elapsed %d millis", week, stopClock.getElapsedTime()));

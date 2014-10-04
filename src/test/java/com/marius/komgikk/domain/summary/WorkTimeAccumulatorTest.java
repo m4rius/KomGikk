@@ -1,5 +1,6 @@
 package com.marius.komgikk.domain.summary;
 
+import com.marius.komgikk.util.DateUtil;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
@@ -9,12 +10,6 @@ public class WorkTimeAccumulatorTest {
 
     @Test
     public void testCalculateAndNormalize1Interval() {
-
-        DateTime.Property property = DateTime.now().weekOfWeekyear();
-        DateTime.Property weekyear = DateTime.now().weekyear();
-
-        DateTime dateTime = DateTime.now().withWeekOfWeekyear(39);
-        dateTime = dateTime.withDayOfWeek(1);
 
         WorkTimeAccumulator accumulator = new WorkTimeAccumulator();
 
@@ -66,6 +61,6 @@ public class WorkTimeAccumulatorTest {
     }
 
     private DateTime getDateTime(int hour, int minutes) {
-        return DateTime.now().withHourOfDay(hour).withMinuteOfHour(minutes).withSecondOfMinute(0).withMillisOfSecond(0);
+        return DateUtil.now().withHourOfDay(hour).withMinuteOfHour(minutes).withSecondOfMinute(0).withMillisOfSecond(0);
     }
 }

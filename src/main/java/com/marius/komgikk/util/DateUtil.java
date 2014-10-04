@@ -1,13 +1,20 @@
 package com.marius.komgikk.util;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import javax.validation.constraints.NotNull;
 
 public class DateUtil {
 
+    private static DateTimeZone timeZone = DateTimeZone.forID("Europe/Oslo");
+
+    public static DateTime now() {
+        return DateTime.now(timeZone);
+    }
+
     public static DateTime getStartOfWeek(int week, int year) {
-        return new DateTime()
+        return new DateTime(timeZone)
                 .withYear(year)
                 .withWeekOfWeekyear(week)
                 .withDayOfWeek(1)
@@ -15,7 +22,7 @@ public class DateUtil {
     }
 
     public static DateTime getEndOfWeek(int week, int year) {
-        return new DateTime()
+        return new DateTime(timeZone)
                 .withYear(year)
                 .withWeekOfWeekyear(week)
                 .withDayOfWeek(7)

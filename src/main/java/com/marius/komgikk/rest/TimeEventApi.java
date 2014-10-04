@@ -8,8 +8,8 @@ import com.marius.komgikk.domain.TimeEvent;
 import com.marius.komgikk.domain.json.JsonKeyInput;
 import com.marius.komgikk.domain.json.JsonTimeEvent;
 import com.marius.komgikk.service.UserService;
+import com.marius.komgikk.util.DateUtil;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 
 import javax.ws.rs.*;
@@ -31,8 +31,7 @@ public class TimeEventApi {
     @Produces(APPLICATION_JSON)
     public String list() {
         KomGikkUser currentUser = userService.getCurrentUser();
-        DateTimeZone dateTimeZone = DateTimeZone.forID("Europe/Oslo");
-        List<JsonTimeEvent> jsonTimeEvents = TimeEvent.allForJson(currentUser, DateTime.now(dateTimeZone));
+        List<JsonTimeEvent> jsonTimeEvents = TimeEvent.allForJson(currentUser, DateUtil.now());
         return new Gson().toJson(jsonTimeEvents);
     }
 
@@ -74,9 +73,7 @@ public class TimeEventApi {
 
         KomGikkUser currentUser = userService.getCurrentUser();
 
-        DateTimeZone dateTimeZone = DateTimeZone.forID("Europe/Oslo");
-
-        TimeEvent timeEvent = new TimeEvent(currentUser, DateTime.now(dateTimeZone), jsonKeyInput.key);
+        TimeEvent timeEvent = new TimeEvent(currentUser, DateUtil.now(), jsonKeyInput.key);
         timeEvent.store();
         LOG.info(String.format("Stored new time event with action key: %s", jsonKeyInput.key ));
 

@@ -12,6 +12,7 @@ import com.marius.komgikk.domain.TimeEvent;
 import com.marius.komgikk.domain.json.JsonActivity;
 import com.marius.komgikk.domain.json.JsonKeyInput;
 import com.marius.komgikk.domain.json.JsonTimeEvent;
+import com.marius.komgikk.util.DateUtil;
 import junit.framework.Assert;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
@@ -91,7 +92,7 @@ public class TimeEventApiTest extends JerseyTest {
         KomGikkUser user = prepareAndStoreDefaultUser();
         List<Activity> activities = Activity.allCurrent(user);
 
-        DateTime now = DateTime.now();
+        DateTime now = DateUtil.now();
 
         //gårsdagens, skal ikke hentes i list
         new TimeEvent(user, now.minusDays(1).minusHours(2), activities.get(0)).store();
@@ -118,7 +119,7 @@ public class TimeEventApiTest extends JerseyTest {
         KomGikkUser user = prepareAndStoreDefaultUser();
         List<Activity> activities = Activity.allCurrent(user);
 
-        DateTime now = DateTime.now();
+        DateTime now = DateUtil.now();
         JsonTimeEvent json1 = new TimeEvent(user, now.minusHours(2), activities.get(0)).store().forJson();
         JsonTimeEvent json2 = new TimeEvent(user, now.minusHours(1), activities.get(1)).store().forJson();
         JsonTimeEvent json3 = new TimeEvent(user, now, activities.get(1)).store().forJson();
@@ -155,7 +156,7 @@ public class TimeEventApiTest extends JerseyTest {
         KomGikkUser user = prepareAndStoreDefaultUser();
         List<Activity> activities = Activity.allCurrent(user);
 
-        DateTime now = DateTime.now();
+        DateTime now = DateUtil.now();
         JsonTimeEvent json1 = new TimeEvent(user, now.minusHours(2), activities.get(0)).store().forJson();
         JsonTimeEvent json2 = new TimeEvent(user, now.minusHours(1), activities.get(1)).store().forJson();
 

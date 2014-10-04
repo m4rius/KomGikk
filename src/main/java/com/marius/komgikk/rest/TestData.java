@@ -10,9 +10,9 @@ import com.marius.komgikk.domain.Activity;
 import com.marius.komgikk.domain.KomGikkUser;
 import com.marius.komgikk.domain.TimeEvent;
 import com.marius.komgikk.service.UserService;
+import com.marius.komgikk.util.DateUtil;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
-import org.joda.time.DateTimeZone;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -55,7 +55,7 @@ public class TestData {
         Activity sePaaTv = new Activity(user, "Se på TV", "4444", null).store();
 
         //Store events
-        DateTime now = DateTime.now(DateTimeZone.forID("Europe/Oslo"));
+        DateTime now = DateUtil.now();
         DateTime date = now.withDayOfWeek(DateTimeConstants.MONDAY);
 
 
