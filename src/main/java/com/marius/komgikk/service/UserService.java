@@ -13,7 +13,7 @@ public class UserService {
     /*
      * TODO Her er det trådproblemer. Samtidige tråder kan kalle denne. Måtte fjerne Activity.storeDefault. Da den ble kalt 4 ganger
      * Av en eller annen grunn blir det bare opprettet 1 bruker. Men det burde nok flyttes ut for sikkerhets skyld
-     * Oppdatering: blir faktisk lagret alle gangene, men fordi userId brukes om key, så blir det lagres oppå hverandre
+     * Oppdatering: blir faktisk lagret alle gangene, men fordi userId brukes som key, så blir det lagres oppå hverandre
      */
     public KomGikkUser getCurrentUser() {
         com.google.appengine.api.users.UserService userService = UserServiceFactory.getUserService();
@@ -36,6 +36,7 @@ public class UserService {
             user.store();
         }
 
+        user.setAdmin(userService.isUserAdmin());
         return user;
     }
 }

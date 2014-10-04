@@ -11,6 +11,8 @@ public class KomGikkUser {
 
     public transient boolean createdNow = false;
 
+    private boolean admin = false;
+
     public KomGikkUser(String username) {
         entity = new Entity(kind, username);
     }
@@ -45,6 +47,10 @@ public class KomGikkUser {
 
     public void setName(String name) {
         entity.setProperty("name", name);
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
     }
 
     public KomGikkUser store() {
@@ -85,6 +91,7 @@ public class KomGikkUser {
         jsonKomGikkUser.username = getUsername();
         jsonKomGikkUser.email = getEmail();
         jsonKomGikkUser.name = getName();
+        jsonKomGikkUser.admin = admin;
 
         return jsonKomGikkUser;
     }

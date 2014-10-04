@@ -7,7 +7,8 @@ angular.module("komGikkApp")
         $scope.menu = [
             {id: 1, name: "Registrere aktivitet", url: "#/time"},
             {id: 3, name: "Ukeliste", url: "#/summary"},
-            {id: 4, name: "Innstillinger", url: "#/settings"}
+            {id: 4, name: "Innstillinger", url: "#/settings"},
+            {id: 5, name: "Admin", url: "#/admin", admin: true}
         ];
 
         var selectedMenuItem = 1;
@@ -52,5 +53,12 @@ angular.module("komGikkApp")
                 }
             }
         });
+
+        $scope.hasAccess = function(menuItem) {
+            if (menuItem.admin) {
+                return !!$scope.data.user.admin;
+            }
+            return true;
+        }
 
     });

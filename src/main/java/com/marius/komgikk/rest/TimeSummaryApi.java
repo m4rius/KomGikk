@@ -11,6 +11,7 @@ import com.marius.komgikk.domain.summary.TimeInterval;
 import com.marius.komgikk.domain.summary.WorkTimeAccumulator;
 import com.marius.komgikk.service.UserService;
 import com.marius.komgikk.util.DateUtil;
+import com.marius.komgikk.util.StopClock;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
@@ -48,13 +49,14 @@ public class TimeSummaryApi {
     @Path("{year}/{week}")
     @Produces(MediaType.APPLICATION_JSON)
     public String summaryForWeek(@PathParam("year")int year, @PathParam("week") int week) {
-        log.info(String.format("Start summary for week %s", week));
+        StopClock stopClock = new StopClock().start();
 
         if (year == 0 || week == 0) {
             DateTime now = DateTime.now();
             year = now.getYear();
             week = now.getWeekOfWeekyear();
         }
+        log.info(String.format("Start summary for week %s", week));
 
         DateTime startDate = DateUtil.getStartOfWeek(week, year);
         DateTime endDate = DateUtil.getEndOfWeek(week, year);
@@ -64,7 +66,12 @@ public class TimeSummaryApi {
         Map<String, Activity> activitiesByKey = Activity.getAllActivitiesByKey(currentUser);
         Map<LocalDate, List<TimeEvent>> timeEvents = TimeEvent.allBetween(currentUser, startDate, endDate);
 
-        return new Gson().toJson(mashUp(timeEvents, activitiesByKey, startDate));
+        JsonTimeSummary timeSummary = mashUp(timeEvents, activitiesByKey, startDate);
+
+        stopClock.stop();
+        log.info(String.format("Done creating summary for week %s. Time elapsed %d millis", week, stopClock.getElapsedTime()));
+
+        return new Gson().toJson(timeSummary);
 
     }
 
