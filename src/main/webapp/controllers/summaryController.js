@@ -27,6 +27,13 @@ angular.module("komGikkApp")
             //todo handle turn off year
 
             getSummary(year, week)
-        }
+        };
+
+        $scope.showNextWeekButton = function() {
+            if ($scope.summary) {
+                return $scope.summary.week < $scope.summary.todayWeek;
+            }
+            return false;
+        };
 
     });

@@ -2,11 +2,6 @@
     <div class="row">
         <div class="col-md-12">
 
-            <div class="visible-lg">LG</div>
-            <div class="visible-md">MD</div>
-            <div class="visible-sm">sm</div>
-            <div class="visible-xs">xs</div>
-
             <h2>Uke {{summary.week}}</h2>
 
             <table class="table table-hover table-striped">
@@ -15,7 +10,7 @@
                         <th colspan="2" class="text-left"><a href="" ng-click="showPreviousWeek()"><span class="glyphicon glyphicon-arrow-left"></span> Forrige</a></th>
                         <th></th>
                         <th></th>
-                        <th colspan="2" class="text-right"><a href="" ng-click="showNextWeek()">Neste <span class="glyphicon glyphicon-arrow-right"></span></a></th>
+                        <th colspan="2" class="text-right"><a href="" ng-click="showNextWeek()" ng-show="showNextWeekButton()">Neste <span class="glyphicon glyphicon-arrow-right"></span></a></th>
                     </tr>
                 </thead>
                 <thead>

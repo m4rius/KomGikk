@@ -67,6 +67,7 @@ public class TimeSummaryApi {
         Map<LocalDate, List<TimeEvent>> timeEvents = TimeEvent.allBetween(currentUser, startDate, endDate);
 
         JsonTimeSummary timeSummary = mashUp(timeEvents, activitiesByKey, startDate);
+        timeSummary.todayWeek = DateTime.now().getWeekOfWeekyear();
 
         stopClock.stop();
         log.info(String.format("Done creating summary for week %s. Time elapsed %d millis", week, stopClock.getElapsedTime()));
