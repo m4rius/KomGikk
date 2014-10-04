@@ -10,6 +10,7 @@ import com.marius.komgikk.domain.Activity;
 import com.marius.komgikk.domain.KomGikkUser;
 import com.marius.komgikk.domain.TimeEvent;
 import com.marius.komgikk.domain.json.JsonActivity;
+import com.marius.komgikk.domain.json.JsonKeyInput;
 import com.marius.komgikk.domain.json.JsonTimeEvent;
 import junit.framework.Assert;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -69,8 +70,8 @@ public class TimeEventApiTest extends JerseyTest {
 
         Assert.assertNotNull(startDay);
 
-        JsonTimeEvent post = new JsonTimeEvent();
-        post.activity = startDay.forJson();
+        JsonKeyInput post = new JsonKeyInput();
+        post.key = startDay.getKeyString();
 
         Response response = target("timeevent").request().post(Entity.json(new Gson().toJson(post)));
 
