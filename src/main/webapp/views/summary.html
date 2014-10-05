@@ -1,52 +1,38 @@
 <div class="container-fluid" ng-controller="sumCtrl">
+
+    <!-- Headline -->
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-6">
+            <h3>Ukeliste</h3>
+        </div>
+        <div class="col-md-6 text-right">
+            <h4>
+                <a href="" ng-click="showPreviousWeek()"><span class="glyphicon glyphicon-chevron-left"></span></a>
+                Uke {{summary.week}} <small>(+30 min)</small>
+                <a href="" ng-click="showNextWeek()" ng-show="showNextWeekButton()"><span class="glyphicon glyphicon-chevron-right"></span></a>
+            </h4>
+        </div>
+    </div>
 
-            <h2>Uke {{summary.week}}</h2>
-
-            <table class="table table-hover table-striped">
+    <!-- one row for each day-->
+    <div class="row" ng-repeat="day in summary.days">
+        <div class="col-md-9">
+            <h4 style="color: #5bc0de">{{day.day}} <small>({{day.hours}})</small></h4>
+            <table class="table table-hover">
                 <thead>
                     <tr>
-                        <th colspan="2" class="text-left"><a href="" ng-click="showPreviousWeek()"><span class="glyphicon glyphicon-arrow-left"></span> Forrige</a></th>
-                        <th></th>
-                        <th></th>
-                        <th colspan="2" class="text-right"><a href="" ng-click="showNextWeek()" ng-show="showNextWeekButton()">Neste <span class="glyphicon glyphicon-arrow-right"></span></a></th>
-                    </tr>
-                </thead>
-                <thead>
-                    <tr>
-                        <th>Dag</th>
-                        <th>Aktivtet</th>
                         <th>SAP-konto</th>
-                        <th class="hidden-xs">Faktisk tid</th>
-                        <th>Normalisert</th>
-                        <th>Timer</th>
-
+                        <th>Timeføring</th>
+                        <th>Aktvitet</th>
                     </tr>
                 </thead>
-                <tr ng-repeat-start="day in summary.days">
-                    <td colspan="3">{{day.day}}</td>
-                    <td class="hidden-xs"></td>
-                    <td>{{day.from}} - {{day.to}}</td>
-                    <td>{{day.hours}}</td>
-                </tr>
-                <tr ng-repeat="activity in day.activities" ng-repeat-end>
-                    <td></td>
-                    <td>{{activity.activityName}}</td>
+                <tr ng-repeat="activity in day.activities">
                     <td>{{activity.sap}}</td>
-                    <td class="hidden-xs">
-                        <span ng-repeat="actualTime in activity.actualTimes">
-                            {{actualTime.from}} - {{actualTime.to}}<br>
-                        </span>
-                    </td>
                     <td>{{activity.normalizedFrom}} - {{activity.normalizedTo}}</td>
-                    <td>{{activity.hours}}</td>
+                    <td>{{activity.activityName}}</td>
                 </tr>
             </table>
         </div>
 
     </div>
-
-
-
 </div>

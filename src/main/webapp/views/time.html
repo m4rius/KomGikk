@@ -1,91 +1,81 @@
 <div ng-controller="timeCtrl" class="container-fluid">
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-12">
             <h3>Registrere aktivitet</h3>
-        </div>
-        <div class="col-md-6">
-            <h3>{{ verboseToday() }}</h3>
         </div>
     </div>
     <div class="row">
         <div class="col-md-6">
-            <a href="" ng-click="showPreviousDay()"><span class="glyphicon glyphicon-arrow-left"></span> Forrige</a>
-        </div>
-        <div class="col-md-6 text-right">
-            <a href="" ng-click="showNextDay()" ng-show="showNextDayButton()">Neste <span class="glyphicon glyphicon-arrow-right"></span></a>
-        </div>
-    </div>
-<div class="row">
-    <div class="col-md-6">
-        <p>
+            <div class="jumbotron">
+                <div class="btn-group btn-group-justified text-center" style="padding-bottom: 20px" ng-show="showStart()">
+                    <a class="btn btn-lg btn-success" href="#" role="button" ng-click="doStart()" >Kom</a>
+                </div>
 
-        </p>
-        <div class="jumbotron">
-            <div class="btn-group btn-group-justified text-center" style="padding-bottom: 20px" ng-show="showStart()">
-                <a class="btn btn-lg btn-success" href="#" role="button" ng-click="doStart()" >Kom</a>
+
+                <div class="text-center"  ng-show="showActivityButtons()">
+                    <div ng-repeat="activity in data.activities.activityList | filter:filterActivities | orderBy: 'name'">
+                        <div class="btn-group btn-group-justified" style="padding-bottom: 7px">
+                            <a class="btn"
+                               href="#"
+                               role="button"
+                               ng-click="startActivity(activity)"
+                               ng-class="activityButtonClass(activity)">
+                                {{activity.name}}
+                            </a>
+                        </div>
+                    </div>
+                    <br>
+                </div>
+
+                <div class="btn-group btn-group-justified text-center" style="padding-bottom: 20px" ng-show="showEnd()">
+                    <a class="btn btn-lg btn-success" href="#" role="button" ng-click="doEnd()">Gikk</a>
+                </div>
             </div>
+        </div>
+        <div class="col-md-6">
 
-
-            <div class="text-center"  ng-show="showActivityButtons()">
-                <div ng-repeat="activity in data.activities.activityList | filter:filterActivities | orderBy: 'name'">
-                    <div class="btn-group btn-group-justified" style="padding-bottom: 7px">
-                        <a class="btn"
-                           href="#"
-                           role="button"
-                           ng-click="startActivity(activity)"
-                           ng-class="activityButtonClass(activity)">
-                            {{activity.name}}
-                        </a>
+            <div class="highlight">
+                <h4><a href="" ng-click="showPreviousDay()"><span class="glyphicon glyphicon-chevron-left"></span></a>
+                    {{ verboseToday() }}
+                    <a href="" ng-click="showNextDay()" ng-show="showNextDayButton()"><span class="glyphicon glyphicon-chevron-right"></span></a>
+                </h4>
+                <form editable-form name="tableform" onaftersave="saveTable()" oncancel="cancel()">
+                <table class="table table-hover ">
+                    <thead>
+                        <tr>
+                            <th>Kl.</th>
+                            <th>Aktivitet</th>
+                            <th ng-show="tableform.$visible"><span >Action</span></th>
+                        </tr>
+                    </thead>
+                    <tr ng-repeat="event in data.events.list | filter:filterEvent |orderBy: 'time'">
+                        <td>
+                            <span editable-text="event.time" e-form="tableform" onbeforesave="checkTime($data, event)">
+                                {{ event.time || 'empty' }}
+                            </span>
+                        </td>
+                        <td>
+                            <span editable-select="event.activity.key" e-form="tableform" e-ng-options="a.key as a.name for a in data.activities.activityList">
+                                {{ event.activity.name }}
+                            </span>
+                        </td>
+                        <td ng-show="tableform.$visible"><button type="button"  ng-click="deleteEvent(event)" class="btn btn-danger pull-right">Fjern</button></td>
+                    </tr>
+                </table>
+                <!-- buttons -->
+                <div class="btn-edit">
+                    <button type="button" class="btn btn-primary" ng-show="!tableform.$visible" ng-click="tableform.$show()">
+                        Endre
+                    </button>
+                    <div class="btn-form" ng-show="tableform.$visible">
+                        <button type="button" ng-disabled="tableform.$waiting" ng-click="addEvent()" class="btn btn-default pull-right">Legg til</button>
+                        <button type="submit" ng-disabled="tableform.$waiting" class="btn btn-primary">Lagre</button>
+                        <button type="button" ng-disabled="tableform.$waiting" ng-click="tableform.$cancel()" class="btn btn-default">Avbryt</button>
                     </div>
                 </div>
-                <br>
-            </div>
-
-            <div class="btn-group btn-group-justified text-center" style="padding-bottom: 20px" ng-show="showEnd()">
-                <a class="btn btn-lg btn-success" href="#" role="button" ng-click="doEnd()">Gikk</a>
+                </form>
             </div>
         </div>
-    </div>
-    <div class="col-md-6">
 
-        <div class="highlight">
-            <form editable-form name="tableform" onaftersave="saveTable()" oncancel="cancel()">
-            <table class="table table-hover table-striped">
-                <thead>
-                    <tr>
-                        <th>Kl.</th>
-                        <th>Aktivitet</th>
-                        <th ng-show="tableform.$visible"><span >Action</span></th>
-                    </tr>
-                </thead>
-                <tr ng-repeat="event in data.events.list | filter:filterEvent |orderBy: 'time'">
-                    <td>
-                        <span editable-text="event.time" e-form="tableform" onbeforesave="checkTime($data, event)">
-                            {{ event.time || 'empty' }}
-                        </span>
-                    </td>
-                    <td>
-                        <span editable-select="event.activity.key" e-form="tableform" e-ng-options="a.key as a.name for a in data.activities.activityList">
-                            {{ event.activity.name }}
-                        </span>
-                    </td>
-                    <td ng-show="tableform.$visible"><button type="button"  ng-click="deleteEvent(event)" class="btn btn-danger pull-right">Fjern</button></td>
-                </tr>
-            </table>
-            <!-- buttons -->
-            <div class="btn-edit">
-                <button type="button" class="btn btn-primary" ng-show="!tableform.$visible" ng-click="tableform.$show()">
-                    Endre
-                </button>
-                <div class="btn-form" ng-show="tableform.$visible">
-                    <button type="button" ng-disabled="tableform.$waiting" ng-click="addEvent()" class="btn btn-default pull-right">Legg til</button>
-                    <button type="submit" ng-disabled="tableform.$waiting" class="btn btn-primary">Lagre</button>
-                    <button type="button" ng-disabled="tableform.$waiting" ng-click="tableform.$cancel()" class="btn btn-default">Avbryt</button>
-                </div>
-            </div>
-            </form>
-        </div>
     </div>
-
-</div>
 </div>
