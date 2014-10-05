@@ -142,12 +142,12 @@ public class TimeEvent extends DataStoreDependentDomain implements Comparable<Ti
     }
 
 
-    public static List<TimeEvent> all(KomGikkUser user, DateTime dateTime) {
+    public static List<TimeEvent> all(KomGikkUser user, LocalDate date) {
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-        Query.Filter minTimeFilter = new Query.FilterPredicate("dateTime", Query.FilterOperator.GREATER_THAN_OR_EQUAL, dateTime.withTimeAtStartOfDay().toDate());
-        Query.Filter maxTimeFilter = new Query.FilterPredicate("dateTime", Query.FilterOperator.LESS_THAN_OR_EQUAL, dateTime.withTimeAtStartOfDay().plusDays(1).toDate());
+        Query.Filter minTimeFilter = new Query.FilterPredicate("dateTime", Query.FilterOperator.GREATER_THAN_OR_EQUAL, date.toDate());
+        Query.Filter maxTimeFilter = new Query.FilterPredicate("dateTime", Query.FilterOperator.LESS_THAN_OR_EQUAL, date.plusDays(1).toDate());
 
 
         Query q = new Query(kind)
@@ -211,8 +211,8 @@ public class TimeEvent extends DataStoreDependentDomain implements Comparable<Ti
         return jsonTimeEvent;
     }
 
-    public static List<JsonTimeEvent> allForJson(KomGikkUser user, DateTime dateTime) {
-        List<TimeEvent> timeEvents = all(user, dateTime);
+    public static List<JsonTimeEvent> allForJson(KomGikkUser user, LocalDate date) {
+        List<TimeEvent> timeEvents = all(user, date);
 
         return Lists.transform(timeEvents, new Function<TimeEvent, JsonTimeEvent>() {
             public JsonTimeEvent apply(TimeEvent i) {

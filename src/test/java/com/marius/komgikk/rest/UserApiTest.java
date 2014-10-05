@@ -41,7 +41,7 @@ public class UserApiTest {
     public void testGet() {
         UserApi userApi = new UserApi();
         String currentUser = userApi.getCurrentUser();
-        String expected = "{\"username\":\"10\",\"email\":\"test@test.com\"}";
+        String expected = "{\"username\":\"10\",\"email\":\"test@test.com\",\"admin\":true}";
         assertEquals(expected, currentUser);
     }
 

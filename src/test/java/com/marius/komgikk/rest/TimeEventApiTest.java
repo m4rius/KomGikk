@@ -12,6 +12,7 @@ import com.marius.komgikk.domain.TimeEvent;
 import com.marius.komgikk.domain.json.JsonActivity;
 import com.marius.komgikk.domain.json.JsonKeyInput;
 import com.marius.komgikk.domain.json.JsonTimeEvent;
+import com.marius.komgikk.domain.json.JsonWorkingDay;
 import com.marius.komgikk.util.DateUtil;
 import junit.framework.Assert;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -88,7 +89,7 @@ public class TimeEventApiTest extends JerseyTest {
     }
 
     @Test
-    public void testList() throws IOException {
+    public void testListGet() throws IOException {
         KomGikkUser user = prepareAndStoreDefaultUser();
         List<Activity> activities = Activity.allCurrent(user);
 
@@ -104,14 +105,14 @@ public class TimeEventApiTest extends JerseyTest {
         new TimeEvent(user, now.minusHours(1), activities.get(1)).store();
         new TimeEvent(user, now, activities.get(1)).store();
 
-        Response response = target("timeevent/list").request().get();
+        Response response = target("timeevent/list/0/0/0").request().get();
 
         String result = readResponse(response);
 
-        List<JsonTimeEvent> events = new Gson().fromJson(result, new TypeToken<List<JsonTimeEvent>>() {}.getType());
+        JsonWorkingDay workingDay = new Gson().fromJson(result, JsonWorkingDay.class);
 
-        assert events != null;
-        assertEquals(3, events.size());
+        assert workingDay.events != null;
+        assertEquals(3, workingDay.events.size());
     }
 
     @Test

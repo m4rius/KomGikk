@@ -55,7 +55,7 @@ angular.module("komGikkApp")
         });
 
         $scope.hasAccess = function(menuItem) {
-            if (menuItem.admin) {
+            if (menuItem && menuItem.admin && $scope.data.user) {
                 return !!$scope.data.user.admin;
             }
             return true;

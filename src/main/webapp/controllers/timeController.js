@@ -2,6 +2,32 @@ var app = angular.module("komGikkApp");
 
 app.controller("timeCtrl", function($scope, $http, $filter, properties, activityService, timeEventService) {
 
+    var prevDate;
+    var selectedDate;
+    var nextDate;
+
+    function getEvents(year, month, day) {
+
+        $http.get(properties.timeeventUrl + "/list/" + year + "/" + month + "/" + day)
+            .success(function(returnValue) {
+                timeEventService.addAllTimeEvents($scope.data, returnValue.events);
+                prevDate = new Date(returnValue.prevDate.year, returnValue.prevDate.month-1, returnValue.prevDate.day);
+                selectedDate = new Date(returnValue.selectedDate.year, returnValue.selectedDate.month-1, returnValue.selectedDate.day);
+                if (returnValue.nextDate) {
+                    nextDate = new Date(returnValue.nextDate.year, returnValue.nextDate.month-1, returnValue.nextDate.day);
+                }
+
+                console.log("PrevDate: " + prevDate);
+                console.log("SelectedDate: " + selectedDate);
+            })
+            .error(function (error) {
+                console.log("Feil ved henting av timeevents: " + error);
+                $scope.data.error = error;
+            });
+    }
+
+    getEvents(0, 0, 0);
+
     function postNewTimeEvent(json) {
         $http.post(properties.timeeventUrl, json)
             .success(function(returnValue) {
@@ -10,15 +36,28 @@ app.controller("timeCtrl", function($scope, $http, $filter, properties, activity
     }
 
     function leftPad(s, pad) {
-        var str = "" + s
+        var str = "" + s;
         return pad.substring(0, pad.length - str.length) + str
 
     }
 
+    $scope.showPreviousDay = function() {
+        getEvents(prevDate.getFullYear(), prevDate.getMonth()+1, prevDate.getDate());
+    };
+
+    $scope.showNextDay = function() {
+        getEvents(nextDate.getFullYear(), nextDate.getMonth()+1, nextDate.getDate());
+    };
+
+    $scope.showNextDayButton = function() {
+        return !!nextDate;
+    };
+
     $scope.verboseToday = function() {
-        var dager = ['Søndag', 'Mandag', 'Tirsdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lørdag'];
-        var d = new Date();
-        return dager[d.getDay()] + " " + leftPad(d.getDate(), '00') + "." + leftPad(d.getMonth(), '00');
+        if (selectedDate) {
+            var dager = ['Søndag', 'Mandag', 'Tirsdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lørdag'];
+            return dager[selectedDate.getDay()] + " " + leftPad(selectedDate.getDate(), '00') + "." + leftPad(selectedDate.getMonth(), '00');
+        }
     };
 
     $scope.doStart = function() {
@@ -91,7 +130,7 @@ app.controller("timeCtrl", function($scope, $http, $filter, properties, activity
     };
 
     $scope.addEvent = function() {
-        var date = new Date();
+        var date = selectedDate;
         $scope.data.events.list.push({
             time: date.getHours() + ":" + date.getMinutes(),
             date: date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(),

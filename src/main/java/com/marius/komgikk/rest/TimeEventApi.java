@@ -1,15 +1,18 @@
 package com.marius.komgikk.rest;
 
-import com.google.common.base.Preconditions;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.marius.komgikk.domain.KomGikkUser;
 import com.marius.komgikk.domain.TimeEvent;
+import com.marius.komgikk.domain.json.JsonDate;
 import com.marius.komgikk.domain.json.JsonKeyInput;
 import com.marius.komgikk.domain.json.JsonTimeEvent;
+import com.marius.komgikk.domain.json.JsonWorkingDay;
 import com.marius.komgikk.service.UserService;
 import com.marius.komgikk.util.DateUtil;
+import com.marius.komgikk.util.StopClock;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 
 import javax.ws.rs.*;
@@ -17,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Path("/timeevent")
@@ -27,12 +31,37 @@ public class TimeEventApi {
     private UserService userService = new UserService();
 
     @GET
-    @Path("/list")
+    @Path("/list/{year}/{month}/{day}")
     @Produces(APPLICATION_JSON)
-    public String list() {
+    public String list(@PathParam("year") int year, @PathParam("month") int month, @PathParam("day") int day) {
+        StopClock stopClock = new StopClock().start();
+
+        LocalDate listDate = year == 0 ? LocalDate.now() : new LocalDate(year, month, day);
+
         KomGikkUser currentUser = userService.getCurrentUser();
-        List<JsonTimeEvent> jsonTimeEvents = TimeEvent.allForJson(currentUser, DateUtil.now());
-        return new Gson().toJson(jsonTimeEvents);
+        List<JsonTimeEvent> jsonTimeEvents = TimeEvent.allForJson(currentUser, listDate);
+
+        JsonWorkingDay workingDay = createWorkingDate(jsonTimeEvents, listDate);
+
+        LOG.info(String.format("List time event for %s: %s millis",
+                listDate.toString("dd.MM.yyyy"),
+                stopClock.getElapsedTime()));
+
+        return new Gson().toJson(workingDay);
+    }
+
+    private JsonWorkingDay createWorkingDate(List<JsonTimeEvent> jsonTimeEvents, LocalDate listDate) {
+        JsonWorkingDay jsonWorkingDay = new JsonWorkingDay();
+        jsonWorkingDay.events = jsonTimeEvents;
+
+        jsonWorkingDay.prevDate = JsonDate.from(listDate.minusDays(1));
+        jsonWorkingDay.selectedDate = JsonDate.from(listDate);
+
+        if (listDate.isBefore(DateUtil.now().toLocalDate())) {
+            jsonWorkingDay.nextDate = JsonDate.from(listDate.plusDays(1));
+        }
+
+        return jsonWorkingDay;
     }
 
     @PUT
@@ -44,7 +73,7 @@ public class TimeEventApi {
 
         KomGikkUser currentUser = userService.getCurrentUser();
         List<JsonTimeEvent> returnValue = new ArrayList<>();
-        for (JsonTimeEvent event : events) {
+        for (JsonTimeEvent event : checkNotNull(events)) {
             if (event.isNew) {
                 DateTime dateTime = DateTime.parse(event.date + " " + event.time, DateTimeFormat.forPattern("dd.MM.yyyy HH:mm"));
                 TimeEvent newEvent = new TimeEvent(currentUser, dateTime, event.activity.key).store();
@@ -69,7 +98,7 @@ public class TimeEventApi {
     public String storeNew(String json) {
         JsonKeyInput jsonKeyInput = new Gson().fromJson(json, JsonKeyInput.class);
 
-        Preconditions.checkNotNull(jsonKeyInput.key);
+        checkNotNull(jsonKeyInput.key);
 
         KomGikkUser currentUser = userService.getCurrentUser();
 

@@ -22,14 +22,4 @@ angular.module("komGikkApp")
                 console.log("Feil ved henting av bruker: " + error);
                 $scope.data.error = error;
             });
-
-        $http.get(properties.timeeventUrl + "/list")
-            .success(function(returnValue) {
-                timeEventService.addAllTimeEvents($scope.data, returnValue);
-            })
-            .error(function (error) {
-                console.log("Feil ved henting av timeevents: " + error);
-                $scope.data.error = error;
-            })
-
     });
