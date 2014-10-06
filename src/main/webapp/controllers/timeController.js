@@ -64,8 +64,16 @@ app.controller("timeCtrl", function($scope, $http, $filter, properties, activity
         postNewTimeEvent("{\"key\":\"" + $scope.data.activities.startDayActivity.key + "\"}");
     };
 
+    $scope.doStartExtra = function() {
+        postNewTimeEvent("{\"key\":\"" + $scope.data.activities.startExtraSession.key + "\"}");
+    };
+
     $scope.doEnd = function() {
         postNewTimeEvent("{\"key\":\"" + $scope.data.activities.endDayActivity.key + "\"}");
+    };
+
+    $scope.doEndExtra = function() {
+        postNewTimeEvent("{\"key\":\"" + $scope.data.activities.endExtraSession.key + "\"}");
     };
 
     $scope.startActivity = function (activity) {
@@ -80,12 +88,20 @@ app.controller("timeCtrl", function($scope, $http, $filter, properties, activity
         return $scope.data.events.isStarted && !$scope.data.events.isEnded;
     };
 
+    $scope.showStartExtra = function() {
+        return $scope.data.events.isEnded && !$scope.data.events.isExtraOngoing;
+    };
+
+    $scope.showEndExtra = function() {
+        return $scope.data.events.isEnded && $scope.data.events.isExtraOngoing;
+    };
+
     $scope.filterActivities = function(activity) {
         return !activity.defaultType;
     };
 
     $scope.showActivityButtons = function() {
-        return $scope.data.events.isStarted && !$scope.data.events.isEnded;
+        return ($scope.data.events.isStarted && !$scope.data.events.isEnded) || $scope.data.events.isExtraOngoing;
     };
 
     $scope.activityButtonClass = function(activity) {

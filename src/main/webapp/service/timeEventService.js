@@ -7,12 +7,21 @@ angular.module("komGikkApp")
                 switch (timeEvent.activity.defaultType) {
                     case 'START':
                         scopeData.events.isStarted = true;
-                        timeEvent.activity.name = 'Kom';
                         break;
                     case 'END':
                         scopeData.events.isEnded = true;
-                        timeEvent.activity.name = 'Gikk';
+                        break;
+                    case 'START_EXTRA':
+                        scopeData.events.isExtraOngoing = true;
+                        break;
+                    case 'END_EXTRA':
+                        scopeData.events.isExtraOngoing = false;
+                        break;
+                    default:
+                        break;
+
                 }
+
             } else {
                 scopeData.events.currentAction = timeEvent.activity;
             }
@@ -25,6 +34,7 @@ angular.module("komGikkApp")
                 scopeData.events = {};
                 scopeData.events.isStarted = false;
                 scopeData.events.isEnded = false;
+                scopeData.events.isExtraOngoing = false;
                 scopeData.events.list = [];
                 scopeData.events.currentAction = null;
             },
@@ -40,6 +50,7 @@ angular.module("komGikkApp")
                 //reset previous data
                 scopeData.events.isStarted = false;
                 scopeData.events.isEnded = false;
+                scopeData.events.isExtraOngoing = false;
                 scopeData.events.list = [];
 
                 for (var i = 0; i < timeEvents.length; ++i) {

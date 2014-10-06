@@ -5,6 +5,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.marius.komgikk.domain.json.JsonActivity;
+import com.marius.komgikk.service.UserService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +21,8 @@ public class Activity extends  DataStoreDependentDomain {
 
     private Entity entity;
 
+    private transient KomGikkUser user;
+
 
     /*
     Constructors
@@ -29,6 +32,7 @@ public class Activity extends  DataStoreDependentDomain {
         this.entity = new Entity(kind, user.getKey());
         setState(ActivityState.CURRENT);
         entity.setProperty("user", user.getUsername());
+        this.user = user;
     }
 
     public Activity(KomGikkUser user, String name, String sap, String category) {
@@ -42,12 +46,14 @@ public class Activity extends  DataStoreDependentDomain {
     private static Activity defaultActivity(KomGikkUser user, DefaultActivities type) {
         Activity activity = new Activity(user);
         setDefaultType(type, activity);
+        activity.user = user;
         return activity;
     }
 
     public static Activity from(Entity entity, KomGikkUser user) {
         Activity activity = new Activity(user);
         activity.entity = entity;
+        activity.user = user;
         return activity;
     }
 
@@ -89,6 +95,13 @@ public class Activity extends  DataStoreDependentDomain {
 
     public String getKeyString() {
         return KeyFactory.keyToString(entity.getKey());
+    }
+
+    private KomGikkUser getUser() {
+        if (user == null) {
+            user = new UserService().getCurrentUser();
+        }
+        return user;
     }
 
     private static void setDefaultType(DefaultActivities type, Activity activity) {
@@ -202,9 +215,26 @@ public class Activity extends  DataStoreDependentDomain {
             activity.name = getName();
             activity.category = getCategory();
             activity.sap = getSap();
+        } else {
+            activity.name = getNameForDefaultType();
         }
 
         return activity;
+    }
+
+    private String getNameForDefaultType() {
+        switch (getDefaultType()) {
+            case START:
+                return "Kom";
+            case END:
+                return "Gikk";
+            case START_EXTRA:
+                return "Start kveldsøkt";
+            case END_EXTRA:
+                return "Avslutt kveldsøkt";
+        }
+
+        return null;
     }
 
     public static List<JsonActivity> getForJson(KomGikkUser user) {

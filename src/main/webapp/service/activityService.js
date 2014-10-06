@@ -4,19 +4,29 @@ angular.module("komGikkApp")
         function Activities(activities) {
             this.startDayActivity = null;
             this.endDayActivity = null;
+            this.startExtraSession = null;
+            this.endExtraSession = null;
             this.activityList = [];
             this.activitiesByKey = {};
+            this.defaultActivities = {};
 
             this.addActivity = function(activity) {
                 if (activity.defaultType) {
+                    this.defaultActivities[activity.defaultType] = activity;
                     switch (activity.defaultType) {
                         case 'START':
                             this.startDayActivity = activity;
-                            activity.name = 'Kom';
                             break;
                         case 'END':
                             this.endDayActivity = activity;
-                            activity.name = 'Gikk';
+                            break;
+                        case 'START_EXTRA':
+                            this.startExtraSession = activity;
+                            break;
+                        case 'END_EXTRA':
+                            this.endExtraSession = activity;
+                            break;
+                        default:
                             break;
                     }
                 }
@@ -46,6 +56,8 @@ angular.module("komGikkApp")
             console.log("Listen har " + this.activityList.length + " elementer");
             console.log("Start day " + this.startDayActivity.key);
             console.log("End day " + this.endDayActivity.key);
+            console.log(this.startExtraSession.name + " - " + this.startExtraSession.key);
+            console.log("End ekstra " + this.endExtraSession.key);
 
         }
 
@@ -57,8 +69,6 @@ angular.module("komGikkApp")
 
             addAllActivities: function(scopeData, activities) {
                 scopeData.activities = new Activities(activities);
-                console.log("Activities i scope data " + scopeData.activities);
-                console.log("Activities list i scope data " + scopeData.activities.activityList);
             },
 
             removeActivity: function(scopeDate, activity) {
