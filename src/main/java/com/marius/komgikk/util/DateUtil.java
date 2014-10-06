@@ -2,6 +2,7 @@ package com.marius.komgikk.util;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
 
@@ -42,5 +43,11 @@ public class DateUtil {
 
     public static DateTime at(@NotNull DateTime dateTime, int hour, int minutes) {
         return dateTime.withHourOfDay(hour).withMinuteOfHour(minutes).withSecondOfMinute(0).withMillisOfSecond(0);
+    }
+
+    public static DateTime parse(String time) {
+        DateTime dateTime = DateTime.parse(time, DateTimeFormat.forPattern("dd.MM.yyyy HH:mm"));
+        dateTime = dateTime.withZoneRetainFields(timeZone);
+        return dateTime;
     }
 }

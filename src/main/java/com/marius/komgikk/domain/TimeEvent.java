@@ -5,10 +5,10 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.marius.komgikk.domain.json.JsonTimeEvent;
 import com.marius.komgikk.service.UserService;
+import com.marius.komgikk.util.DateUtil;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
-import org.joda.time.format.DateTimeFormat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,7 +80,7 @@ public class TimeEvent extends DataStoreDependentDomain implements Comparable<Ti
     }
 
     public void setDateTime(String time) {
-        setDateTime(DateTime.parse(time, DateTimeFormat.forPattern("dd.MM.yyyy HH:mm")));
+        setDateTime(DateUtil.parse(time));
     }
 
     public DateTime getDateTime() {
