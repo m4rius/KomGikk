@@ -13,6 +13,7 @@ angular.module("komGikkApp")
                         break;
                     case 'START_EXTRA':
                         scopeData.events.isExtraOngoing = true;
+                        scopeData.events.currentAction = null;
                         break;
                     case 'END_EXTRA':
                         scopeData.events.isExtraOngoing = false;

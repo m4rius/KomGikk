@@ -54,7 +54,7 @@
                             <th ng-show="tableform.$visible"><span >Action</span></th>
                         </tr>
                     </thead>
-                    <tr ng-repeat="event in data.events.list | filter:filterEvent |orderBy: 'time'">
+                    <tr ng-repeat="event in data.events.list | filter:filterEvent |orderBy: 'time'" ng-class="rowClass(event)">
                         <td>
                             <span editable-text="event.time" e-form="tableform" onbeforesave="checkTime($data, event)">
                                 {{ event.time || 'empty' }}
@@ -65,7 +65,7 @@
                                 {{ event.activity.name }}
                             </span>
                         </td>
-                        <td ng-show="tableform.$visible"><button type="button"  ng-click="deleteEvent(event)" class="btn btn-danger pull-right">Fjern</button></td>
+                        <td ng-show="tableform.$visible"><a type="button"  ng-click="deleteEvent(event)" href="">Slett</a></td>
                     </tr>
                 </table>
                 <!-- buttons -->

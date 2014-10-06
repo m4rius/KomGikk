@@ -50,4 +50,13 @@ public class DateUtil {
         dateTime = dateTime.withZoneRetainFields(timeZone);
         return dateTime;
     }
+
+    public static DateTime normalize(DateTime dateTime) {
+        int minuteOfDay = dateTime.getMinuteOfHour();
+        int normalizedMin = (minuteOfDay/15) * 15;
+        if (minuteOfDay - normalizedMin > 6) {
+            normalizedMin = normalizedMin + 15;
+        }
+        return dateTime.withMinuteOfHour(0).plusMinutes(normalizedMin); //might be 60 min
+    }
 }

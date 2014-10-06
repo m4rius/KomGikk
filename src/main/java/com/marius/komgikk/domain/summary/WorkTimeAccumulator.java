@@ -9,6 +9,8 @@ import org.joda.time.DateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.marius.komgikk.util.DateUtil.normalize;
+
 public class WorkTimeAccumulator {
 
     public boolean missingEnd = false;
@@ -57,15 +59,7 @@ public class WorkTimeAccumulator {
         return normalizedTo;
     }
 
-    private DateTime normalize(DateTime dateTime) {
-        int minuteOfDay = dateTime.getMinuteOfHour();
-        int normalizedMin = (minuteOfDay/15) * 15;
-        if (minuteOfDay - normalizedMin > 6) {
-            normalizedMin = normalizedMin + 15;
-        }
-        return dateTime.withMinuteOfHour(0).plusMinutes(normalizedMin); //might be 60 min
 
-    }
 
     public JsonTimeSummaryActivity forJson() {
         JsonTimeSummaryActivity jsonTimeSummaryActivity = new JsonTimeSummaryActivity();

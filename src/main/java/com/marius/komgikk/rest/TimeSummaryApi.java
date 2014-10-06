@@ -23,8 +23,7 @@ import javax.ws.rs.core.MediaType;
 import java.util.*;
 import java.util.logging.Logger;
 
-import static com.marius.komgikk.domain.Activity.DefaultActivities.END;
-import static com.marius.komgikk.domain.Activity.DefaultActivities.START;
+import static com.marius.komgikk.domain.Activity.DefaultActivities.*;
 
 @Path("/summary")
 public class TimeSummaryApi {
@@ -126,13 +125,31 @@ public class TimeSummaryApi {
         //Sorteres på tid
         Collections.sort(timeEventsForDate);
 
+
         if (timeEventsForDate.size() < 3) {
             return new ArrayList<>();
         }
 
+        List<TimeEvent> mainBlock = filterEventBlock(timeEventsForDate, START, END);
+        List<WorkTimeAccumulator> allAccumulators = accumulateBlock(mainBlock, START, END);
+
+        //kveldsøkter
+        while (timeEventsForDate.size() > 2) {
+            List<TimeEvent> extraBlock = filterEventBlock(timeEventsForDate, START_EXTRA, END_EXTRA);
+            if (extraBlock.size() == 0) {
+                break;
+            }
+            allAccumulators.addAll(accumulateBlock(extraBlock, START_EXTRA, END_EXTRA));
+        }
+
+        return allAccumulators;
+    }
+
+    private List<WorkTimeAccumulator> accumulateBlock(List<TimeEvent> timeEventsForDate, Activity.DefaultActivities startType, Activity.DefaultActivities endType) {
+
         //Finner kom og gikk og fjerner dem fra listen
-        TimeEvent kom = findDefault(START, timeEventsForDate, activitiesByKey);
-        TimeEvent gikk = findDefault(END, timeEventsForDate, activitiesByKey);
+        TimeEvent startEvent = findDefault(startType, timeEventsForDate);
+        TimeEvent endEvent = findDefault(endType, timeEventsForDate);
 
         Iterator<TimeEvent> iterator = timeEventsForDate.iterator();
 
@@ -140,38 +157,65 @@ public class TimeSummaryApi {
         TimeEvent event = iterator.next();
 
         //minutter fra Kom til første event startet. Skal deles ut på alle akumulators til slutt
-        int komTilAct = event.getDateTime().getMinuteOfDay() - kom.getDateTime().getMinuteOfDay();
+        int komTilAct = event.getDateTime().getMinuteOfDay() - startEvent.getDateTime().getMinuteOfDay();
 
         List<WorkTimeAccumulator> allAccumulators = new ArrayList<>();
 
         while (iterator.hasNext()) {
             TimeEvent nextEvent = iterator.next();
 
-            addAccumulator(activitiesByKey, event, allAccumulators, nextEvent);
+            addAccumulator(event, allAccumulators, nextEvent);
             event = nextEvent;
         }
-        addAccumulatorForLastEvent(activitiesByKey, gikk, event, allAccumulators);
+        addAccumulatorForLastEvent(endEvent, event, allAccumulators);
 
 
         addNotWorkingTime(allAccumulators, komTilAct);
 
-        DateTime startAt = kom.getDateTime().withTimeAtStartOfDay().plusHours(8);
+        DateTime startAt = findStartTime(startEvent);
         calculateIntervalFromStartDay(allAccumulators, startAt);
-
         return allAccumulators;
     }
 
-    private void addAccumulator(Map<String, Activity> activitiesByKey, TimeEvent event, List<WorkTimeAccumulator> allAccumulators, TimeEvent nextEvent) {
+    private DateTime findStartTime(TimeEvent startEvent) {
+        if (startEvent.getActivity().getDefaultType() == START) {
+            return startEvent.getDateTime().withTimeAtStartOfDay().plusHours(8);
+        } else {
+            return DateUtil.normalize(startEvent.getDateTime());
+        }
+    }
+
+    private List<TimeEvent> filterEventBlock(List<TimeEvent> timeEventsForDate, Activity.DefaultActivities start, Activity.DefaultActivities end) {
+        List<TimeEvent> result = new ArrayList<>();
+
+        //First should be START
+        if (timeEventsForDate.get(0).getActivity().getDefaultType() != start) {
+            return new ArrayList<>();
+        }
+
+        for (TimeEvent timeEvent : timeEventsForDate) {
+            result.add(timeEvent);
+            if (timeEvent.getActivity().getDefaultType() == end) {
+                break;
+            }
+        }
+
+        timeEventsForDate.removeAll(result);
+
+        return result;
+    }
+
+    private void addAccumulator(TimeEvent event, List<WorkTimeAccumulator> allAccumulators, TimeEvent nextEvent) {
         WorkTimeAccumulator accumulator = new WorkTimeAccumulator();
-        accumulator.activity = activitiesByKey.get(event.getActivityKey());
+        accumulator.activity = event.getActivity();
 
         accumulator.addTimeInterval(new TimeInterval(event.getDateTime(), nextEvent.getDateTime()));
         addToList(allAccumulators, accumulator);
     }
 
-    private void addAccumulatorForLastEvent(Map<String, Activity> activitiesByKey, TimeEvent gikk, TimeEvent event, List<WorkTimeAccumulator> allAccumulators) {
+    private void addAccumulatorForLastEvent(TimeEvent gikk, TimeEvent event, List<WorkTimeAccumulator> allAccumulators) {
         WorkTimeAccumulator accumulator = new WorkTimeAccumulator();
-        accumulator.activity = activitiesByKey.get(event.getActivityKey());
+        accumulator.activity = event.getActivity();
 
         if (gikk != null) {
             accumulator.addTimeInterval(new TimeInterval(event.getDateTime(), gikk.getDateTime()));
@@ -228,10 +272,10 @@ public class TimeSummaryApi {
     }
 
 
-    private TimeEvent findDefault(Activity.DefaultActivities type, List<TimeEvent> timeEventsForDate, Map<String, Activity> activitiesByKey) {
+    private TimeEvent findDefault(Activity.DefaultActivities type, List<TimeEvent> timeEventsForDate) {
         int index = -1;
         for (int i = 0; i < timeEventsForDate.size(); i++) {
-            if (activitiesByKey.get(timeEventsForDate.get(i).getActivityKey()).getDefaultType() == type) {
+            if (timeEventsForDate.get(i).getActivity().getDefaultType() == type) {
                 index = i;
             }
         }

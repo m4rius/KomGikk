@@ -179,4 +179,10 @@ app.controller("timeCtrl", function($scope, $http, $filter, properties, activity
         }
     };
 
+    $scope.rowClass = function(event) {
+        if (event.activity.defaultType == 'START_EXTRA') {
+            return "thickRow";
+        }
+    }
+
 });
