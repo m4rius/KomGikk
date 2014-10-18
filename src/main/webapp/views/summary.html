@@ -23,12 +23,14 @@
                     <tr>
                         <th>SAP-konto</th>
                         <th>Timeføring</th>
+                        <th class="hidden-xs">Timer</th>
                         <th>Aktvitet</th>
                     </tr>
                 </thead>
                 <tr ng-repeat="activity in day.activities">
                     <td>{{activity.sap}}</td>
                     <td>{{activity.normalizedFrom}} - {{activity.normalizedTo}}</td>
+                    <td class="hidden-xs">{{activity.hours}}</td>
                     <td>{{activity.activityName}}</td>
                 </tr>
             </table>

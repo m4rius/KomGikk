@@ -130,6 +130,7 @@ public class TimeSummaryApi {
             return new ArrayList<>();
         }
 
+        //TODO: Får feil dersom start og første event er samtidig. Kan skje dersom bruker har vært inne og endret tid.
         List<TimeEvent> mainBlock = filterEventBlock(timeEventsForDate, START, END);
         List<WorkTimeAccumulator> allAccumulators = accumulateBlock(mainBlock, START, END);
 
