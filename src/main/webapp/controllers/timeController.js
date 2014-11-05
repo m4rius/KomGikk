@@ -56,7 +56,7 @@ app.controller("timeCtrl", function($scope, $http, $filter, properties, activity
     $scope.verboseToday = function() {
         if (selectedDate) {
             var dager = ['Søndag', 'Mandag', 'Tirsdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lørdag'];
-            return dager[selectedDate.getDay()] + " " + leftPad(selectedDate.getDate(), '00') + "." + leftPad(selectedDate.getMonth(), '00');
+            return dager[selectedDate.getDay()] + " " + leftPad(selectedDate.getDate(), '00') + "." + leftPad(selectedDate.getMonth()+1, '00');
         }
     };
 
