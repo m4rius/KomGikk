@@ -2,6 +2,7 @@ package com.marius.komgikk.domain;
 
 import com.google.appengine.api.datastore.*;
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.marius.komgikk.domain.json.JsonTimeEvent;
 import com.marius.komgikk.service.UserService;
@@ -132,6 +133,8 @@ public class TimeEvent extends DataStoreDependentDomain implements Comparable<Ti
      */
 
     public TimeEvent store() {
+        Preconditions.checkNotNull(getActivityKey(), "Trying to store time event without activity");
+
         getDataStore().put(entity);
         return this;
     }
