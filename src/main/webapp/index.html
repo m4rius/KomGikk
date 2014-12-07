@@ -20,7 +20,7 @@
 
     <style>
         body {
-            min-height: 2000px;
+            min-height: 200px;
             padding-top: 70px;
         }
     </style>
@@ -65,7 +65,7 @@
 <ng-include src="'views/menu.html'"></ng-include>
 
 <div class="alert alert-danger" ng-show="data.error">
-    <p>Sorry, noe gikk helt på tryne. Error ({{data.error.status || 'undefined'}}).</p>
+    <p>Uff da, noe gikk ikke helt som planlagt. Prøv igjen. Error ({{data.error.status || 'undefined'}}).</p>
     <a href="/index.html" class="alert-link">Prøv igjen</a>
 </div>
 
