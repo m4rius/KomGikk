@@ -16,9 +16,7 @@ app.controller("timeCtrl", function($scope, $http, $filter, properties, activity
                 if (returnValue.nextDate) {
                     nextDate = new Date(returnValue.nextDate.year, returnValue.nextDate.month-1, returnValue.nextDate.day);
                 }
-
-                console.log("PrevDate: " + prevDate);
-                console.log("SelectedDate: " + selectedDate);
+                $scope.loadingState.timeEventLoaded = true;
             })
             .error(function (error) {
                 console.log("Feil ved henting av timeevents: " + error);
@@ -81,7 +79,7 @@ app.controller("timeCtrl", function($scope, $http, $filter, properties, activity
     };
 
     $scope.showStart = function() {
-        return !$scope.data.events.isStarted;
+        return $scope.loadingState.isReadyForUserInteraction() && !$scope.data.events.isStarted;
     };
 
     $scope.showEnd = function() {
