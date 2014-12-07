@@ -19,6 +19,15 @@
         <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>KeepAlive</servlet-name>
+        <servlet-class>com.marius.komgikk.servlet.KeepAliveServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>KeepAlive</servlet-name>
+        <url-pattern>/keepAlive</url-pattern>
+    </servlet-mapping>
+
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>komgikk</web-resource-name>
