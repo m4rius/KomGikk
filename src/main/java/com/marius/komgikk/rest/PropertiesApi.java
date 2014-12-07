@@ -21,7 +21,7 @@ public class PropertiesApi {
         Map<String, String> properties = new HashMap<>();
 
         UserService userService = UserServiceFactory.getUserService();
-        properties.put("logoutUrl", userService.createLogoutURL("/index.html"));
+        properties.put("logoutUrl", userService.createLogoutURL("/app/main.html"));
 
         return new Gson().toJson(properties);
     }
