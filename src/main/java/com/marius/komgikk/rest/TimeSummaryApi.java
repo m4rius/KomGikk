@@ -7,8 +7,8 @@ import com.marius.komgikk.domain.KomGikkUser;
 import com.marius.komgikk.domain.TimeEvent;
 import com.marius.komgikk.domain.json.JsonTimeSummary;
 import com.marius.komgikk.domain.json.JsonTimeSummaryDay;
-import com.marius.komgikk.domain.summary.TimeInterval;
 import com.marius.komgikk.domain.summary.WorkTimeAccumulator;
+import com.marius.komgikk.domain.summary.WorkTimeBlock;
 import com.marius.komgikk.service.UserService;
 import com.marius.komgikk.util.DateUtil;
 import com.marius.komgikk.util.StopClock;
@@ -97,14 +97,6 @@ public class TimeSummaryApi {
 
             List<WorkTimeAccumulator> accumulators = createAccumulators(timeEventsForDate, activitiesByKey);
 
-            if (accumulators.size() > 1) {
-                WorkTimeAccumulator first = accumulators.get(0);
-                WorkTimeAccumulator last = accumulators.get(accumulators.size() - 1);
-
-                day.from = first.normalizedFrom.toString("HH:mm");
-                day.to = last.normalizedTo != null ? last.normalizedTo.toString("HH:mm") : null;
-            }
-
             double hours = 0;
             for (WorkTimeAccumulator accumulator : accumulators) {
                 hours +=accumulator.getHours();
@@ -125,14 +117,15 @@ public class TimeSummaryApi {
         //Sorteres på tid
         Collections.sort(timeEventsForDate);
 
-
         if (timeEventsForDate.size() < 3) {
             return new ArrayList<>();
         }
 
         //TODO: Får feil dersom start og første event er samtidig. Kan skje dersom bruker har vært inne og endret tid.
         List<TimeEvent> mainBlock = filterEventBlock(timeEventsForDate, START, END);
-        List<WorkTimeAccumulator> allAccumulators = accumulateBlock(mainBlock, START, END);
+        WorkTimeBlock mainHours = WorkTimeBlock.forNormalHours(mainBlock);
+
+        List<WorkTimeAccumulator> allAccumulators = mainHours.accumulators;
 
         //kveldsøkter
         while (timeEventsForDate.size() > 2) {
@@ -140,50 +133,10 @@ public class TimeSummaryApi {
             if (extraBlock.size() == 0) {
                 break;
             }
-            allAccumulators.addAll(accumulateBlock(extraBlock, START_EXTRA, END_EXTRA));
+            allAccumulators.addAll(WorkTimeBlock.forExtraHours(extraBlock).accumulators);
         }
 
         return allAccumulators;
-    }
-
-    private List<WorkTimeAccumulator> accumulateBlock(List<TimeEvent> timeEventsForDate, Activity.DefaultActivities startType, Activity.DefaultActivities endType) {
-
-        //Finner kom og gikk og fjerner dem fra listen
-        TimeEvent startEvent = findDefault(startType, timeEventsForDate);
-        TimeEvent endEvent = findDefault(endType, timeEventsForDate);
-
-        Iterator<TimeEvent> iterator = timeEventsForDate.iterator();
-
-        //Dagens første event
-        TimeEvent event = iterator.next();
-
-        //minutter fra Kom til første event startet. Skal deles ut på alle akumulators til slutt
-        int komTilAct = event.getDateTime().getMinuteOfDay() - startEvent.getDateTime().getMinuteOfDay();
-
-        List<WorkTimeAccumulator> allAccumulators = new ArrayList<>();
-
-        while (iterator.hasNext()) {
-            TimeEvent nextEvent = iterator.next();
-
-            addAccumulator(event, allAccumulators, nextEvent);
-            event = nextEvent;
-        }
-        addAccumulatorForLastEvent(endEvent, event, allAccumulators);
-
-
-        addNotWorkingTime(allAccumulators, komTilAct);
-
-        DateTime startAt = findStartTime(startEvent);
-        calculateIntervalFromStartDay(allAccumulators, startAt);
-        return allAccumulators;
-    }
-
-    private DateTime findStartTime(TimeEvent startEvent) {
-        if (startEvent.getActivity().getDefaultType() == START) {
-            return startEvent.getDateTime().withTimeAtStartOfDay().plusHours(8);
-        } else {
-            return DateUtil.normalize(startEvent.getDateTime());
-        }
     }
 
     private List<TimeEvent> filterEventBlock(List<TimeEvent> timeEventsForDate, Activity.DefaultActivities start, Activity.DefaultActivities end) {
@@ -206,89 +159,9 @@ public class TimeSummaryApi {
         return result;
     }
 
-    private void addAccumulator(TimeEvent event, List<WorkTimeAccumulator> allAccumulators, TimeEvent nextEvent) {
-        WorkTimeAccumulator accumulator = new WorkTimeAccumulator();
-        accumulator.activity = event.getActivity();
-
-        accumulator.addTimeInterval(new TimeInterval(event.getDateTime(), nextEvent.getDateTime()));
-        addToList(allAccumulators, accumulator);
-    }
-
-    private void addAccumulatorForLastEvent(TimeEvent gikk, TimeEvent event, List<WorkTimeAccumulator> allAccumulators) {
-        WorkTimeAccumulator accumulator = new WorkTimeAccumulator();
-        accumulator.activity = event.getActivity();
-
-        if (gikk != null) {
-            accumulator.addTimeInterval(new TimeInterval(event.getDateTime(), gikk.getDateTime()));
-            addToList(allAccumulators, accumulator);
-        } else {
-            accumulator.addTimeInterval(new TimeInterval(event.getDateTime(), null));
-            accumulator.missingEnd = true;
-            addToList(allAccumulators, accumulator);
-        }
-
-    }
-
-    private void calculateIntervalFromStartDay(List<WorkTimeAccumulator> allAccumulators, DateTime startAt) {
-        for (WorkTimeAccumulator accumulator : allAccumulators) {
-            startAt = accumulator.calculateTotalIntervalStartingAt(startAt);
-        }
-
-    }
-
-    private void addNotWorkingTime(List<WorkTimeAccumulator> allAccumulators, int komTilAct) {
-        int forhver = komTilAct / allAccumulators.size();
-        int rest = komTilAct % allAccumulators.size();
-
-        log.info(String.format("Each accumulator will get %s extra minuets. %s min is rest and will not be added", forhver, rest));
-
-        for (WorkTimeAccumulator accumulator : allAccumulators) {
-            accumulator.extraMin = forhver;
-        }
-    }
-
-
     private void addActivities(List<TimeEvent> timeEventsForDate, Map<String, Activity> activitiesByKey) {
         for (TimeEvent timeEvent : timeEventsForDate) {
             timeEvent.setActivity(activitiesByKey);
         }
     }
-
-
-    private void addToList(List<WorkTimeAccumulator> accumulators, WorkTimeAccumulator accumulator) {
-        if (accumulator.missingEnd) {
-            accumulators.add(accumulator);
-            return;
-        }
-
-        for (WorkTimeAccumulator a : accumulators) {
-            if (!a.missingEnd && a.activity.getKeyString().equals(accumulator.activity.getKeyString())) {
-                a.plus(accumulator);
-                return;
-            }
-        }
-
-        //dersom den ikke allerede var der legges den til
-        accumulators.add(accumulator);
-    }
-
-
-    private TimeEvent findDefault(Activity.DefaultActivities type, List<TimeEvent> timeEventsForDate) {
-        int index = -1;
-        for (int i = 0; i < timeEventsForDate.size(); i++) {
-            if (timeEventsForDate.get(i).getActivity().getDefaultType() == type) {
-                index = i;
-            }
-        }
-
-        if (index < 0) {
-            return null;
-        }
-
-        TimeEvent timeEvent = timeEventsForDate.get(index);
-        timeEventsForDate.remove(index);
-
-        return timeEvent;
-    }
-
 }

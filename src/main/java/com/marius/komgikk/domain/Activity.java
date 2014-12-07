@@ -43,7 +43,7 @@ public class Activity extends  DataStoreDependentDomain {
 
     }
 
-    private static Activity defaultActivity(KomGikkUser user, DefaultActivities type) {
+    public static Activity defaultActivity(KomGikkUser user, DefaultActivities type) {
         Activity activity = new Activity(user);
         setDefaultType(type, activity);
         activity.user = user;

@@ -30,8 +30,11 @@ public class WorkTimeAccumulator {
 
 
     public double getHours() {
-        int minutes = normalizedTo.getMinuteOfDay() - normalizedFrom.getMinuteOfDay();
-        return minutes / 60d;
+        return getNormalizedMinutes() / 60d;
+    }
+
+    public int getNormalizedMinutes() {
+        return normalizedTo.getMinuteOfDay() - normalizedFrom.getMinuteOfDay();
     }
 
     public void addTimeInterval(TimeInterval timeInterval) {
